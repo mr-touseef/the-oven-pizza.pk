@@ -462,7 +462,7 @@ async function main() {
   }
 
   for (let ci = 0; ci < categories.length; ci++) {
-    const cat = categories[ci];
+        const cat = categories[ci]!;
     const category = await prisma.menuCategory.upsert({
       where: { slug: cat.slug },
       update: {
@@ -484,7 +484,7 @@ async function main() {
     await prisma.menuItem.deleteMany({ where: { categoryId: category.id } });
 
     for (let ii = 0; ii < cat.items.length; ii++) {
-      const item = cat.items[ii];
+      const item = cat.items[ii]!;
       await prisma.menuItem.create({
         data: {
           categoryId: category.id,
