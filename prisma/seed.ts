@@ -429,15 +429,7 @@ const branchSeeds = [
     passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD),
     displayOrder: 2,
   },
-  {
-    slug: "fateh-sher",
-    name: "The Oven Pizza — Fateh Sher",
-    address: "M4C7+Q9X, Girls College Rd, Fateh Sher, Pakistan",
-    photoUrl: "/images/menu-royalties-burgers.png",
-    adminUsername: "fateh-sher",
-    passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD),
-    displayOrder: 3,
-  },
+  
   {
     slug: "chichawatni",
     name: "The Oven Pizza — Chichawatni",
