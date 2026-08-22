@@ -1,0 +1,203 @@
+// The Oven Pizza — Prisma schema
+// Run `npx prisma migrate dev --name init` after setting DATABASE_URL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Menu
+// ─────────────────────────────────────────────────────────────────────────
+
+enum MenuSection {
+  PIZZA
+  BURGER
+  SANDWICH
+  SIDE
+  WING
+  SHAWARMA
+  COFFEE
+  DRINK
+  DESSERT
+}
+
+model MenuCategory {
+  id            String       @id @default(cuid())
+  section       MenuSection
+  slug          String       @unique
+  name          String
+  tagline       String?
+  displayOrder  Int          @default(0)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  items         MenuItem[]
+
+  @@index([section])
+  @@index([displayOrder])
+}
+
+model MenuItem {
+  id            String            @id @default(cuid())
+  categoryId    String
+  category      MenuCategory      @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  badge         String?
+  imageUrl      String?
+  isAvailable   Boolean           @default(true)
+  displayOrder  Int               @default(0)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  prices        MenuItemPrice[]
+
+  @@index([categoryId])
+  @@index([displayOrder])
+}
+
+model MenuItemPrice {
+  id            String    @id @default(cuid())
+  menuItemId    String
+  menuItem      MenuItem  @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  label         String    // e.g. "Small", "Medium", "Large", "5 PC", "Regular"
+  priceRs       Int
+  displayOrder  Int       @default(0)
+
+  @@index([menuItemId])
+}
+
+model Deal {
+  id             String    @id @default(cuid())
+  title          String
+  description    String
+  priceRs        Int
+  activeWindow   String?   // e.g. "10AM to 5PM"
+  includedItems  String[]  @default([]) // e.g. ["1 Medium Pizza", "5pc Hot Wings"]
+  isActive       Boolean   @default(true)
+  displayOrder   Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([displayOrder])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Branches
+// ─────────────────────────────────────────────────────────────────────────
+
+model Branch {
+  id             String    @id @default(cuid())
+  slug           String    @unique
+  name           String
+  address        String
+  phone          String?
+  /// Optional second contact number for the branch (e.g. a WhatsApp/mobile line).
+  phone2         String?
+  photoUrl       String
+  isActive       Boolean   @default(true)
+  displayOrder   Int       @default(0)
+  /// Login username for this branch's admin/orders dashboard. Null = admin
+  /// login disabled for this branch.
+  adminUsername  String?   @unique
+  /// Salted+hashed admin password (scrypt, "salt:hash" hex). Never store plaintext.
+  passwordHash   String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  orders         Order[]
+
+  @@index([displayOrder])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Orders (persisted checkouts placed from the cart)
+// ─────────────────────────────────────────────────────────────────────────
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PREPARING
+  COMPLETED
+  CANCELLED
+}
+
+model Order {
+  id                String       @id @default(cuid())
+  branchId          String?
+  branch            Branch?      @relation(fields: [branchId], references: [id])
+  customerName      String
+  customerPhone     String
+  customerEmail     String?
+  subtotal          Int
+  discountPercent   Int          @default(0)
+  discountAmount    Int          @default(0)
+  total             Int
+  status            OrderStatus  @default(PENDING)
+  notes             String?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  lines             OrderLine[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([branchId])
+}
+
+model OrderLine {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  kind        String   // "menu" | "deal"
+  refId       String   // MenuItem.id or Deal.id
+  name        String
+  sizeLabel   String?
+  unitPrice   Int
+  quantity    Int
+  lineTotal   Int
+
+  @@index([orderId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Customer interactions
+// ─────────────────────────────────────────────────────────────────────────
+
+enum InquiryType {
+  ORDER
+  RESERVATION
+  FEEDBACK
+  GENERAL
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  RESOLVED
+}
+
+model Inquiry {
+  id              String        @id @default(cuid())
+  name            String
+  phone           String
+  email           String?
+  type            InquiryType   @default(GENERAL)
+  message         String
+  status          InquiryStatus @default(NEW)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model NewsletterSubscriber {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+}

@@ -1,0 +1,77 @@
+import SectionHeading from "./SectionHeading";
+import ContactForm from "./ContactForm";
+
+export default function ContactSection() {
+  const phonePrimary = process.env.NEXT_PUBLIC_RESTAURANT_PHONE_PRIMARY || "0304-1114303";
+  const phoneSecondary = process.env.NEXT_PUBLIC_RESTAURANT_PHONE_SECONDARY || "0300-1580250";
+  const address =
+    process.env.NEXT_PUBLIC_RESTAURANT_ADDRESS || "Zahid Iqbal Chowk, Chichawatni, Punjab, Pakistan";
+
+  return (
+    <section id="contact" aria-labelledby="contact-heading" className="scroll-mt-24 bg-oven-teal-dark/40 py-16 sm:py-24">
+      <div className="container-page">
+        <SectionHeading
+          id="contact-heading"
+          eyebrow="Order, reserve or ask"
+          title="Order or Reserve a Table"
+          tagline="Call us directly, or send a message and we'll ring you back."
+        />
+
+        <div className="mt-12 grid gap-8 lg:grid-cols-5">
+          <div className="lg:col-span-2">
+            <div className="space-y-6 rounded-xl2 border border-oven-cream/10 bg-oven-teal-deep/50 p-6 shadow-card sm:p-8">
+              <div>
+                <h3 className="font-display text-lg text-oven-crust">Call for free delivery</h3>
+                <a
+                  href={`tel:${phonePrimary.replace(/-/g, "")}`}
+                  className="mt-1 block font-mono text-2xl text-oven-cream hover:text-oven-flame-light"
+                >
+                  {phonePrimary}
+                </a>
+                <a
+                  href={`tel:${phoneSecondary.replace(/-/g, "")}`}
+                  className="mt-1 block font-mono text-lg text-oven-cream/80 hover:text-oven-flame-light"
+                >
+                  {phoneSecondary}
+                </a>
+              </div>
+
+              <div>
+                <h3 className="font-display text-lg text-oven-crust">Find us</h3>
+                <p className="mt-1 text-oven-cream/80">{address}</p>
+              </div>
+
+              <div>
+                <h3 className="font-display text-lg text-oven-crust">Follow along</h3>
+                <div className="mt-2 flex gap-3">
+                  <a
+                    href="https://www.tiktok.com/@theovenmianchichawatni"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-oven-cream/15 px-4 py-2 text-sm text-oven-cream/80 hover:border-oven-flame-light hover:text-oven-flame-light"
+                  >
+                    TikTok
+                  </a>
+                  <a
+                    href="https://www.facebook.com/theovenmianchichawatni"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-oven-cream/15 px-4 py-2 text-sm text-oven-cream/80 hover:border-oven-flame-light hover:text-oven-flame-light"
+                  >
+                    Facebook
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-3">
+            <div className="rounded-xl2 border border-oven-cream/10 bg-oven-teal-deep/50 p-6 shadow-card sm:p-8">
+              <ContactForm />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

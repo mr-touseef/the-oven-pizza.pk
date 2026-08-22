@@ -1,0 +1,96 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    @apply border-oven-smoke/20;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 96px;
+  }
+
+  body {
+    @apply bg-oven-charcoal text-oven-cream;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display;
+  }
+
+  ::selection {
+    @apply bg-oven-flame/40 text-oven-cream;
+  }
+
+  /* Visible keyboard focus everywhere, including custom components */
+  :focus-visible {
+    outline: 2px solid #F4A93F;
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Printed-menu style dot leader between an item name and its price */
+  .menu-row {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .menu-row__leader {
+    flex: 1 1 auto;
+    border-bottom: 2px dotted rgba(246, 238, 221, 0.28);
+    height: 0;
+    margin-bottom: 0.35rem;
+    min-width: 1rem;
+  }
+
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .section-eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-oven-flame/40 bg-oven-flame/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-oven-flame-light;
+  }
+}
+
+@media print {
+  /* Hide site chrome and any element opted out of printing; only the
+     .receipt-print block (rendered by the cart page) should appear. */
+  header,
+  footer,
+  nav,
+  .no-print {
+    display: none !important;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    color: #111111 !important;
+  }
+
+  .receipt-print {
+    display: block !important;
+    color: #111111;
+    font-family: var(--font-mono), ui-monospace, monospace;
+  }
+
+  @page {
+    margin: 12mm;
+  }
+}
