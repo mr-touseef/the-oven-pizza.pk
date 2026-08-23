@@ -10,7 +10,7 @@ export default function MenuCategoryCard({ category }: { category: MenuCategoryW
       {category.tagline ? (
         <p className="mb-4 text-sm text-oven-cream/60">{category.tagline}</p>
       ) : null}
-      <ul className="divide-y divide-oven-cream/10">
+            <ul className="space-y-3">
         {category.items.map((item) => (
           <MenuItemRow key={item.id} item={item} categoryName={category.name} />
         ))}

@@ -15,7 +15,7 @@ export default function MenuItemRow({
   const onlyPrice = item.prices.length === 1 ? item.prices[0] : undefined;
 
   return (
-    <li className="py-3">
+       <li className="rounded-xl border border-oven-cream/10 bg-oven-charcoal/30 p-4">
       <div className="flex gap-3">
         {item.imageUrl ? (
           <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-oven-cream/10 sm:h-20 sm:w-20">
