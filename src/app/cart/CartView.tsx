@@ -11,7 +11,7 @@ type CheckoutFieldErrors = Partial<
   Record<"customerName" | "customerPhone" | "customerEmail" | "branchId" | "notes" | "lines", string>
 >;
 
-export default function CartView({ branches }: { branches: Branch[] }) {
+export default function CartView({ branches, isAdmin }: { branches: Branch[]; isAdmin: boolean }) {
   const { lines, subtotal, incrementLine, decrementLine, removeLine, clearCart } = useCart();
   const [discountInput, setDiscountInput] = useState("");
 
@@ -30,10 +30,11 @@ export default function CartView({ branches }: { branches: Branch[] }) {
   );
 
   const discountPercent = useMemo(() => {
+    if (!isAdmin) return 0;
     const n = Number(discountInput);
     if (!discountInput.trim() || Number.isNaN(n)) return 0;
     return Math.min(100, Math.max(0, n));
-  }, [discountInput]);
+  }, [discountInput, isAdmin]);
 
   const discountAmount = Math.round((subtotal * discountPercent) / 100);
   const total = subtotal - discountAmount;
@@ -158,7 +159,6 @@ export default function CartView({ branches }: { branches: Branch[] }) {
 
   return (
     <div className="container-page py-16 sm:py-20">
-      {/* ── Editable cart (screen only) ───────────────────────────────── */}
       <div className="no-print">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -242,23 +242,25 @@ export default function CartView({ branches }: { branches: Branch[] }) {
             <span className="font-mono">{formatRs(subtotal)}</span>
           </div>
 
-          <div className="mt-4">
-            <label htmlFor="discount" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
-              Discount (%)
-            </label>
-            <input
-              id="discount"
-              type="number"
-              inputMode="decimal"
-              min={0}
-              max={100}
-              step="1"
-              value={discountInput}
-              onChange={(e) => setDiscountInput(e.target.value)}
-              placeholder="0"
-              className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light"
-            />
-          </div>
+          {isAdmin ? (
+            <div className="mt-4">
+              <label htmlFor="discount" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+                Discount (%)
+              </label>
+              <input
+                id="discount"
+                type="number"
+                inputMode="decimal"
+                min={0}
+                max={100}
+                step="1"
+                value={discountInput}
+                onChange={(e) => setDiscountInput(e.target.value)}
+                placeholder="0"
+                className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light"
+              />
+            </div>
+          ) : null}
 
           {discountPercent > 0 ? (
             <div className="mt-3 flex items-center justify-between text-sm text-oven-flame-light">
@@ -296,7 +298,6 @@ export default function CartView({ branches }: { branches: Branch[] }) {
           </p>
 
           <form onSubmit={handlePlaceOrder} noValidate className="mt-5 space-y-4">
-            {/* Honeypot */}
             <div className="hidden" aria-hidden="true">
               <label htmlFor="checkout-company">Company</label>
               <input
@@ -430,7 +431,6 @@ export default function CartView({ branches }: { branches: Branch[] }) {
         </div>
       </div>
 
-      {/* ── Print-only receipt ────────────────────────────────────────── */}
       <div className="receipt-print hidden">
         <div style={{ textAlign: "center", marginBottom: "16px" }}>
           <p style={{ fontWeight: 700, fontSize: "18px" }}>THE OVEN PIZZA</p>

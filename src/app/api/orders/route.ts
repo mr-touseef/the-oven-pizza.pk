@@ -3,6 +3,7 @@ import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { orderSchema } from "@/lib/validations";
 import { isRateLimited, getClientIp } from "@/lib/rate-limit";
+import { getAdminSession } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -135,8 +136,14 @@ export async function POST(request: Request) {
       }
     }
 
+    // Only a logged-in branch admin (seller) is allowed to apply a discount.
+    // Regular customers can never influence this from the client — even if
+    // they tamper with the request body, it's ignored here.
+    const adminSession = await getAdminSession();
+    const discountPercent = adminSession ? data.discountPercent : 0;
+
     const subtotal = resolvedLines.reduce((sum, l) => sum + l.lineTotal, 0);
-    const discountAmount = Math.round((subtotal * data.discountPercent) / 100);
+    const discountAmount = Math.round((subtotal * discountPercent) / 100);
     const total = subtotal - discountAmount;
 
     const order = await prisma.order.create({
@@ -147,7 +154,7 @@ export async function POST(request: Request) {
         customerEmail: data.customerEmail,
         notes: data.notes,
         subtotal,
-        discountPercent: data.discountPercent,
+        discountPercent,
         discountAmount,
         total,
         lines: { create: resolvedLines },

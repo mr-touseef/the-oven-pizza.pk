@@ -67,7 +67,7 @@ export default function MenuItemRow({
               />
             </div>
           ) : (
-            <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label={`Choose a size for ${item.name}`}>
+            <div className="mt-3 flex flex-wrap gap-3" role="group" aria-label={`Choose a size for ${item.name}`}>
               {item.prices.map((price) => (
                 <AddToCartButton
                   key={price.id}
