@@ -10,6 +10,7 @@ const initialState = {
   phone: "",
   email: "",
   type: "ORDER" as InquiryInput["type"],
+  branch: "",
   message: "",
   company: "", // honeypot
 };
@@ -51,7 +52,7 @@ export default function ContactForm() {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(parsed.data),
+        body: JSON.stringify({ ...parsed.data, branch: values.branch }),
       });
 
       const data = await res.json();
@@ -203,23 +204,43 @@ export default function ContactForm() {
         ) : null}
       </div>
 
-      <button
-        type="submit"
-        disabled={status === "loading"}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-flame-gradient px-7 py-3.5 text-base font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-      >
-        {status === "loading" ? (
-          <>
-            <span
-              className="h-4 w-4 animate-spin rounded-full border-2 border-oven-charcoal/40 border-t-oven-charcoal"
-              aria-hidden="true"
-            />
-            Sending…
-          </>
-        ) : (
-          "Send message"
-        )}
-      </button>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
+        <div>
+          <label htmlFor="branch" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+            Nearest branch
+          </label>
+          <select
+            id="branch"
+            name="branch"
+            value={values.branch}
+            onChange={(e) => update("branch", e.target.value)}
+            className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-3 text-oven-cream focus:border-oven-flame-light sm:w-64"
+          >
+            <option value="">Select a branch</option>
+            <option value="Mian Channu">Mian Channu</option>
+            <option value="Sahiwal">Sahiwal</option>
+            <option value="Chichawatni">Chichawatni</option>
+          </select>
+        </div>
+
+        <button
+          type="submit"
+          disabled={status === "loading"}
+          className="inline-flex items-center justify-center gap-2 rounded-full bg-flame-gradient px-7 py-3.5 text-base font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {status === "loading" ? (
+            <>
+              <span
+                className="h-4 w-4 animate-spin rounded-full border-2 border-oven-charcoal/40 border-t-oven-charcoal"
+                aria-hidden="true"
+              />
+              Sending…
+            </>
+          ) : (
+            "Send message"
+          )}
+        </button>
+      </div>
 
       <div id="form-status" role="status" aria-live="polite">
         {serverMessage ? (
