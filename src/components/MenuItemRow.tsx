@@ -15,7 +15,7 @@ export default function MenuItemRow({
   const onlyPrice = item.prices.length === 1 ? item.prices[0] : undefined;
 
   return (
-             <li className="flex items-center gap-5 rounded-full border border-oven-cream/10 bg-oven-charcoal/30 py-4 pl-4 pr-6 transition-all duration-200 hover:border-oven-flame-light/40 hover:shadow-ember active:border-oven-flame-light/60 active:shadow-ember sm:pr-8">
+                <li className="flex items-center gap-5 rounded-3xl border border-oven-cream/10 bg-oven-charcoal/30 py-4 pl-4 pr-6 transition-all duration-200 hover:border-oven-flame-light/40 hover:shadow-ember active:border-oven-flame-light/60 active:shadow-ember sm:pr-8">
             {item.imageUrl ? (
         <div className="relative -ml-4 h-28 w-28 shrink-0 drop-shadow-[0_10px_15px_rgba(0,0,0,0.5)] sm:-ml-6 sm:h-32 sm:w-32">
           <div className="relative h-full w-full overflow-hidden rounded-full border border-oven-cream/10 bg-oven-charcoal/40">
