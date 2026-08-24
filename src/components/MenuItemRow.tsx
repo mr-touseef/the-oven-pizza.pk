@@ -17,14 +17,14 @@ export default function MenuItemRow({
   return (
        <li className="rounded-xl border border-oven-cream/10 bg-oven-charcoal/30 p-4">
       <div className="flex gap-3">
-        {item.imageUrl ? (
-          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-lg border border-oven-cream/10 sm:h-20 sm:w-20">
+               {item.imageUrl ? (
+          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-oven-cream/10 bg-oven-charcoal/40 sm:h-24 sm:w-24">
             <Image
               src={item.imageUrl}
               alt={item.name}
               fill
-              sizes="80px"
-              className="object-cover"
+              sizes="96px"
+              className="object-contain"
             />
           </div>
         ) : null}

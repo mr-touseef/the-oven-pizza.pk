@@ -35,9 +35,9 @@ export default function AddToCartButton({
       <button
         type="button"
         onClick={() => setConfirmOpen(true)}
-              className={
+                  className={
           className ||
-          "inline-flex items-center gap-2 rounded-xl2 border-2 border-oven-flame/40 bg-oven-flame/10 px-5 py-2.5 font-mono text-sm font-medium text-oven-crust shadow-sm transition-colors hover:border-oven-flame-light hover:bg-oven-flame/20"
+          "inline-flex items-center gap-2 rounded-xl2 border border-oven-flame/30 bg-oven-flame/10 px-5 py-2.5 font-mono text-sm font-medium text-oven-crust shadow-[0_4px_20px_rgba(255,140,60,0.25)] transition-all hover:-translate-y-0.5 hover:border-oven-flame-light hover:bg-oven-flame/20 hover:shadow-[0_6px_24px_rgba(255,140,60,0.4)]"
         }
         aria-label={confirmTitle}
       >

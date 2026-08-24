@@ -26,8 +26,9 @@ const categories: CategoryInput[] = [
     name: "The Oven Royalties",
     tagline: "Stone-baked pizzas, made to order",
     items: [
-      {
+           {
         name: "Arabic Bite",
+        imageUrl: "/images/menu-items/arabic-bite.jpg",
         prices: [
           { label: "Medium", priceRs: 1250 },
           { label: "Large", priceRs: 1750 },

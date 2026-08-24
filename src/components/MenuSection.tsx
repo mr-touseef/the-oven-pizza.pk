@@ -29,7 +29,7 @@ export default function MenuSection({
     >
       <div className="container-page">
         <SectionHeading id={`${id}-heading`} eyebrow={eyebrow} title={title} tagline={tagline} />
-        <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-2">
+                <div className="mt-12 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
           {categories.map((category) => (
             <MenuCategoryCard key={category.id} category={category} />
           ))}
