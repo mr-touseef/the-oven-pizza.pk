@@ -17,7 +17,7 @@ export default function MenuCategoryCard({ category }: { category: MenuCategoryW
         ) : null}
       </div>
 
-      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {category.items.map((item) => (
           <MenuItemRow key={item.id} item={item} categoryName={category.name} />
         ))}
