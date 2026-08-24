@@ -15,46 +15,39 @@ export default function MenuItemRow({
   const onlyPrice = item.prices.length === 1 ? item.prices[0] : undefined;
 
   return (
-       <li className="rounded-xl border border-oven-cream/10 bg-oven-charcoal/30 p-4">
-      <div className="flex gap-3">
-               {item.imageUrl ? (
-          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-oven-cream/10 bg-oven-charcoal/40 sm:h-24 sm:w-24">
-            <Image
-              src={item.imageUrl}
-              alt={item.name}
-              fill
-              sizes="96px"
-              className="object-contain"
-            />
-          </div>
+    <li className="flex h-full flex-col rounded-xl border border-oven-cream/10 bg-oven-charcoal/30 p-3 sm:p-4">
+      {item.imageUrl ? (
+        <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-lg border border-oven-cream/10 bg-oven-charcoal/40">
+          <Image
+            src={item.imageUrl}
+            alt={item.name}
+            fill
+            sizes="(max-width: 640px) 45vw, 220px"
+            className="object-contain"
+          />
+        </div>
+      ) : null}
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <p className="font-display text-base leading-snug text-oven-cream sm:text-lg">{item.name}</p>
+          {item.badge ? (
+            <span className="rounded-full bg-oven-flame/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-oven-flame-light">
+              {item.badge}
+            </span>
+          ) : null}
+        </div>
+
+        {item.description ? (
+          <p className="mt-1 text-xs text-oven-cream/60 sm:text-sm">{item.description}</p>
         ) : null}
 
-        <div className="min-w-0 flex-1">
-          <div className="menu-row">
-            <div className="flex items-baseline gap-2">
-              <p className="font-display text-lg text-oven-cream sm:text-xl">{item.name}</p>
-              {item.badge ? (
-                <span className="rounded-full bg-oven-flame/15 px-2.5 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide text-oven-flame-light">
-                  {item.badge}
-                </span>
-              ) : null}
-            </div>
-            {onlyPrice ? (
-              <>
-                <span className="menu-row__leader" aria-hidden="true" />
-                <span className="whitespace-nowrap font-mono text-base text-oven-crust sm:text-lg">
-                  {formatRs(onlyPrice.priceRs)}
-                </span>
-              </>
-            ) : null}
-          </div>
-
-          {item.description ? (
-            <p className="mt-1 text-sm text-oven-cream/60">{item.description}</p>
-          ) : null}
-
+        <div className="mt-auto pt-3">
           {onlyPrice ? (
-            <div className="mt-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className="whitespace-nowrap font-mono text-sm text-oven-crust sm:text-base">
+                {formatRs(onlyPrice.priceRs)}
+              </span>
               <AddToCartButton
                 item={{
                   kind: "menu",
@@ -63,11 +56,15 @@ export default function MenuItemRow({
                   categoryName,
                   unitPrice: onlyPrice.priceRs,
                 }}
-                label={`Add to Cart — ${formatRs(onlyPrice.priceRs)}`}
+                label="Add"
               />
             </div>
           ) : (
-            <div className="mt-3 flex flex-wrap gap-3" role="group" aria-label={`Choose a size for ${item.name}`}>
+            <div
+              className="flex flex-wrap gap-2"
+              role="group"
+              aria-label={`Choose a size for ${item.name}`}
+            >
               {item.prices.map((price) => (
                 <AddToCartButton
                   key={price.id}
