@@ -15,9 +15,9 @@ export default function MenuItemRow({
   const onlyPrice = item.prices.length === 1 ? item.prices[0] : undefined;
 
   return (
-    <li className="flex h-full flex-col rounded-xl border border-oven-cream/10 bg-oven-charcoal/30 p-3 sm:p-4">
+    <li className="flex h-full flex-col items-center rounded-xl border border-oven-cream/10 bg-oven-charcoal/30 p-4 text-center">
       {item.imageUrl ? (
-        <div className="relative mb-3 aspect-square w-full overflow-hidden rounded-lg border border-oven-cream/10 bg-oven-charcoal/40">
+        <div className="relative mb-3 h-32 w-full overflow-hidden rounded-lg border border-oven-cream/10 bg-oven-charcoal/40 sm:h-36">
           <Image
             src={item.imageUrl}
             alt={item.name}
@@ -28,8 +28,8 @@ export default function MenuItemRow({
         </div>
       ) : null}
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+      <div className="flex min-w-0 flex-1 flex-col items-center">
+        <div className="flex flex-wrap items-baseline justify-center gap-x-2 gap-y-1">
           <p className="font-display text-base leading-snug text-oven-cream sm:text-lg">{item.name}</p>
           {item.badge ? (
             <span className="rounded-full bg-oven-flame/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-oven-flame-light">
@@ -44,7 +44,7 @@ export default function MenuItemRow({
 
         <div className="mt-auto pt-3">
           {onlyPrice ? (
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center justify-center gap-2">
               <span className="whitespace-nowrap font-mono text-sm text-oven-crust sm:text-base">
                 {formatRs(onlyPrice.priceRs)}
               </span>
@@ -61,7 +61,7 @@ export default function MenuItemRow({
             </div>
           ) : (
             <div
-              className="flex flex-wrap gap-2"
+              className="flex flex-wrap justify-center gap-2"
               role="group"
               aria-label={`Choose a size for ${item.name}`}
             >
