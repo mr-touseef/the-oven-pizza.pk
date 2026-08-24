@@ -3,14 +3,21 @@ import MenuItemRow from "./MenuItemRow";
 
 export default function MenuCategoryCard({ category }: { category: MenuCategoryWithItems }) {
   return (
-    <div className="rounded-xl2 border border-oven-cream/10 bg-oven-teal-deep/40 p-6 shadow-card backdrop-blur-sm sm:p-8">
-      <div className="mb-2 flex items-baseline justify-between gap-3">
-        <h3 className="font-display text-2xl text-oven-crust">{category.name}</h3>
+    <div>
+      <div className="mb-6 flex flex-col items-center gap-1 text-center">
+        <div className="flex w-full max-w-md items-center gap-4">
+          <span className="h-px flex-1 bg-oven-flame-light/30" aria-hidden="true" />
+          <h3 className="whitespace-nowrap font-display text-2xl text-oven-crust sm:text-3xl">
+            {category.name}
+          </h3>
+          <span className="h-px flex-1 bg-oven-flame-light/30" aria-hidden="true" />
+        </div>
+        {category.tagline ? (
+          <p className="text-sm text-oven-cream/60 sm:text-base">{category.tagline}</p>
+        ) : null}
       </div>
-      {category.tagline ? (
-        <p className="mb-4 text-sm text-oven-cream/60">{category.tagline}</p>
-      ) : null}
-            <ul className="grid grid-cols-2 gap-3">
+
+      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
         {category.items.map((item) => (
           <MenuItemRow key={item.id} item={item} categoryName={category.name} />
         ))}
