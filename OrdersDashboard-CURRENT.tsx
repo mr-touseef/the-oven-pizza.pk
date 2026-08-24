@@ -30,8 +30,6 @@ export default function OrdersDashboard({
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [discount, setDiscount] = useState("");
   const [discountLoaded, setDiscountLoaded] = useState(false);
-  const [discountSaving, setDiscountSaving] = useState(false);
-  const [discountError, setDiscountError] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchDiscount() {
@@ -50,11 +48,6 @@ export default function OrdersDashboard({
     fetchDiscount();
   }, []);
 
-  // This page is only reachable behind the admin-authenticated branch route,
-  // so posting from here assumes that route-level protection is in place.
-  // The /api/settings/discount POST handler should still independently verify
-  // the admin session itself (never trust the caller's route alone) so this
-  // endpoint stays safe even if it's ever called from somewhere else.
   async function handleDiscountChange(value: string) {
     if (value === "") {
       setDiscount("");
@@ -64,23 +57,15 @@ export default function OrdersDashboard({
     if (Number.isNaN(num)) return;
     const clamped = Math.min(100, Math.max(0, num));
     setDiscount(String(clamped));
-    setDiscountError(null);
-    setDiscountSaving(true);
 
     try {
-      const res = await fetch("/api/settings/discount", {
+      await fetch("/api/settings/discount", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ discountPercent: clamped }),
       });
-      if (!res.ok) {
-        setDiscountError("Couldn't save discount.");
-      }
     } catch (error) {
       console.error("Failed to save discount:", error);
-      setDiscountError("Couldn't save discount.");
-    } finally {
-      setDiscountSaving(false);
     }
   }
 
@@ -124,22 +109,16 @@ export default function OrdersDashboard({
         <div className="flex flex-col items-start gap-3 sm:items-end">
           <label className="flex items-center gap-2 rounded-full border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2 text-sm text-oven-cream/80">
             <span className="whitespace-nowrap font-semibold">Discount (%)</span>
-            {discountLoaded ? (
-              <input
-                type="number"
-                min={0}
-                max={100}
-                value={discount}
-                onChange={(e) => handleDiscountChange(e.target.value)}
-                placeholder="0"
-                className="w-16 rounded-md border border-oven-cream/15 bg-oven-charcoal/80 px-2 py-1 text-right font-mono text-oven-cream focus:border-oven-flame focus:outline-none"
-              />
-            ) : (
-              <span className="h-6 w-16 animate-pulse rounded-md bg-oven-charcoal/60" />
-            )}
+            <input
+              type="number"
+              min={0}
+              max={100}
+              value={discount}
+              onChange={(e) => handleDiscountChange(e.target.value)}
+              placeholder="0"
+              className="w-16 rounded-md border border-oven-cream/15 bg-oven-charcoal/80 px-2 py-1 text-right font-mono text-oven-cream focus:border-oven-flame focus:outline-none"
+            />
           </label>
-          {discountError ? <p className="text-xs text-red-400">{discountError}</p> : null}
-          {discountSaving ? <p className="text-xs text-oven-cream/40">Saving...</p> : null}
 
           <button
             onClick={handleLogout}
