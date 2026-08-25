@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
@@ -7,7 +7,9 @@ import { useCart } from "@/context/CartContext";
 import { formatRs } from "@/lib/types";
 import { orderSchema } from "@/lib/validations";
 
-type CheckoutFieldErrors = Partial<Record<"customerName" | "customerPhone" | "customerEmail" | "branchId" | "notes" | "lines", string>>;
+type OrderType = "DELIVERY" | "PICKUP";
+
+type CheckoutFieldErrors = Partial<Record<"customerName" | "customerPhone" | "customerEmail" | "branchId" | "notes" | "lines" | "orderType" | "deliveryAddress", string>>;
 
 export default function CartView({ branches, isAdmin }: { branches: Branch[]; isAdmin: boolean }) {
   const { lines, subtotal, incrementLine, decrementLine, removeLine, clearCart } = useCart();
@@ -19,6 +21,8 @@ export default function CartView({ branches, isAdmin }: { branches: Branch[]; is
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [branchId, setBranchId] = useState("");
+  const [orderType, setOrderType] = useState<OrderType>("DELIVERY");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
   const [notes, setNotes] = useState("");
   const [company, setCompany] = useState("");
 
@@ -89,6 +93,8 @@ export default function CartView({ branches, isAdmin }: { branches: Branch[]; is
       customerPhone,
       customerEmail,
       branchId: branchId || undefined,
+      orderType,
+      deliveryAddress,
       notes,
       discountPercent,
       company,
@@ -282,6 +288,53 @@ export default function CartView({ branches, isAdmin }: { branches: Branch[]; is
             </div>
 
             <div>
+              <label className="mb-1.5 block text-sm font-medium text-oven-cream/85">Order type</label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setOrderType("DELIVERY")}
+                  className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors ${
+                    orderType === "DELIVERY"
+                      ? "border-oven-flame bg-oven-flame/15 text-oven-flame-light"
+                      : "border-oven-cream/15 text-oven-cream/70 hover:border-oven-cream/30"
+                  }`}
+                >
+                  Delivery
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setOrderType("PICKUP")}
+                  className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors ${
+                    orderType === "PICKUP"
+                      ? "border-oven-flame bg-oven-flame/15 text-oven-flame-light"
+                      : "border-oven-cream/15 text-oven-cream/70 hover:border-oven-cream/30"
+                  }`}
+                >
+                  Pickup
+                </button>
+              </div>
+              {checkoutErrors.orderType ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.orderType}</p> : null}
+            </div>
+
+            {orderType === "DELIVERY" ? (
+              <div>
+                <label htmlFor="checkout-address" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+                  Delivery address
+                </label>
+                <textarea
+                  id="checkout-address"
+                  rows={2}
+                  value={deliveryAddress}
+                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                  aria-invalid={Boolean(checkoutErrors.deliveryAddress)}
+                  className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light"
+                  placeholder="House #, street, area, nearest landmark"
+                />
+                {checkoutErrors.deliveryAddress ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.deliveryAddress}</p> : null}
+              </div>
+            ) : null}
+
+            <div>
               <label htmlFor="checkout-name" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
                 Full name
               </label>
@@ -325,7 +378,7 @@ export default function CartView({ branches, isAdmin }: { branches: Branch[]; is
               <label htmlFor="checkout-notes" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
                 Notes <span className="text-oven-cream/40">(optional)</span>
               </label>
-              <textarea id="checkout-notes" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="Delivery address, gate code, extra spicy..." />
+              <textarea id="checkout-notes" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="Gate code, extra spicy, no onions..." />
             </div>
 
             <button type="submit" disabled={checkoutStatus === "loading"} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-flame-gradient px-6 py-3 text-sm font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60">

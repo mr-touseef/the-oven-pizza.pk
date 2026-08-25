@@ -39,7 +39,6 @@ export async function POST(request: Request) {
 
   const data = parsed.data;
 
-  // Honeypot tripped — pretend success so bots don't learn to avoid the field.
   if (data.company) {
     return NextResponse.json({ message: "Order received." }, { status: 200 });
   }
@@ -50,17 +49,10 @@ export async function POST(request: Request) {
   try {
     const [menuItems, deals, branch] = await Promise.all([
       menuItemIds.length
-        ? prisma.menuItem.findMany({
-            where: { id: { in: menuItemIds } },
-            include: { prices: true },
-          })
+        ? prisma.menuItem.findMany({ where: { id: { in: menuItemIds } }, include: { prices: true } })
         : Promise.resolve([]),
-      dealIds.length
-        ? prisma.deal.findMany({ where: { id: { in: dealIds } } })
-        : Promise.resolve([]),
-      data.branchId
-        ? prisma.branch.findFirst({ where: { id: data.branchId, isActive: true } })
-        : Promise.resolve(null),
+      dealIds.length ? prisma.deal.findMany({ where: { id: { in: dealIds } } }) : Promise.resolve([]),
+      data.branchId ? prisma.branch.findFirst({ where: { id: data.branchId, isActive: true } }) : Promise.resolve(null),
     ]);
 
     if (data.branchId && !branch) {
@@ -136,9 +128,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // Only a logged-in branch admin (seller) is allowed to apply a discount.
-    // Regular customers can never influence this from the client — even if
-    // they tamper with the request body, it's ignored here.
     const adminSession = await getAdminSession();
     const discountPercent = adminSession ? data.discountPercent : 0;
 
@@ -152,6 +141,9 @@ export async function POST(request: Request) {
         customerName: data.customerName,
         customerPhone: data.customerPhone,
         customerEmail: data.customerEmail,
+        orderType: data.orderType,
+        deliveryAddress: data.orderType === "DELIVERY" ? data.deliveryAddress : undefined,
+        isAdminOrder: false,
         notes: data.notes,
         subtotal,
         discountPercent,
@@ -163,10 +155,7 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(
-      {
-        message: "Order received — we'll call you shortly to confirm.",
-        order,
-      },
+      { message: "Order received — we'll call you shortly to confirm.", order },
       { status: 201 }
     );
   } catch (error) {
