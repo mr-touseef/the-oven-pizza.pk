@@ -459,6 +459,16 @@ export default function OrdersDashboard({
                           {line.sizeLabel ? ` (${line.sizeLabel})` : ""}
                         </span>
                         <span className="font-mono text-oven-cream/60">{formatRs(line.lineTotal)}</span>
+      
+                  <div className="mt-3 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => printReceipt(order, branch)}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-1.5 text-xs font-semibold text-oven-cream/80 transition-colors hover:border-oven-flame hover:text-oven-flame-light"
+                    >
+                      Print Receipt
+                    </button>
+                  </div>
                 </li>
                     ))}
                   </ul>
@@ -478,30 +488,6 @@ export default function OrdersDashboard({
                     <span className="font-mono text-base font-semibold text-oven-crust">
                       {formatRs(order.total)}
                     </span>
-                  </div>
-
-                  <div className="mt-3 flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => printReceipt(order, branch)}
-                      className="inline-flex items-center gap-1.5 rounded-full border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-1.5 text-xs font-semibold text-oven-cream/80 transition-colors hover:border-oven-flame hover:text-oven-flame-light"
-                    >
-                      <svg
-                        width="14"
-                        height="14"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        aria-hidden="true"
-                      >
-                        <path
-                          d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2M6 14h12v7H6v-7Z"
-                          stroke="currentColor"
-                          strokeWidth="1.6"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      Print Receipt
-                    </button>
                   </div>
                 </li>
               ))}
