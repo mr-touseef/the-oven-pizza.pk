@@ -1,9 +1,10 @@
-﻿"use client";
+"use client";
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Branch, Order, OrderLine, OrderStatus } from "@prisma/client";
 import { formatRs } from "@/lib/types";
+import { PushNotificationButton } from "@/components/PushNotificationButton";
 
 type OrderWithLines = Order & { lines: OrderLine[] };
 
@@ -41,6 +42,55 @@ const STATUS_STYLES: Record<OrderStatus, string> = {
   CANCELLED: "bg-red-500/15 text-red-300",
 };
 
+function printReceipt(order: OrderWithLines, branch: Branch) {
+  const receiptWindow = window.open("", "_blank", "width=380,height=600");
+  if (!receiptWindow) return;
+
+  const linesHtml = order.lines
+    .map(
+      (l) =>
+        `<div style="display:flex;justify-content:space-between;font-size:12px;margin:3px 0;"><span>${l.quantity}x ${l.name}${l.sizeLabel ? ` (${l.sizeLabel})` : ""}</span><span>${formatRs(l.lineTotal)}</span></div>`
+    )
+    .join("");
+
+  receiptWindow.document.write(`
+    <html>
+      <head>
+        <title>Receipt - ${order.customerName}</title>
+        <style>
+          body { font-family: monospace; padding: 16px; width: 280px; color: #000; }
+          h2 { text-align: center; margin: 0 0 4px 0; font-size: 16px; }
+          p { margin: 2px 0; font-size: 12px; }
+          hr { border: none; border-top: 1px dashed #000; margin: 8px 0; }
+          .total { font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; margin-top: 4px; }
+          .center { text-align: center; }
+        </style>
+      </head>
+      <body>
+        <h2>${branch.name}</h2>
+        <p class="center">${branch.address}</p>
+        <hr />
+        <p>Order #${order.id.slice(-6).toUpperCase()}</p>
+        <p>${new Date(order.createdAt).toLocaleString("en-PK")}</p>
+        <p>Customer: ${order.customerName}</p>
+        <p>Phone: ${order.customerPhone}</p>
+        ${order.isAdminOrder ? "<p>(Admin-placed order)</p>" : ""}
+        <hr />
+        ${linesHtml}
+        <hr />
+        <p>Subtotal: ${formatRs(order.subtotal)}</p>
+        ${order.discountAmount > 0 ? `<p>Discount: -${formatRs(order.discountAmount)}</p>` : ""}
+        <div class="total"><span>Total</span><span>${formatRs(order.total)}</span></div>
+        <hr />
+        <p class="center">Thank you for your order!</p>
+      </body>
+    </html>
+  `);
+  receiptWindow.document.close();
+  receiptWindow.focus();
+  receiptWindow.print();
+}
+
 function todayIso() {
   const d = new Date();
   const year = d.getFullYear();
@@ -60,6 +110,25 @@ export default function OrdersDashboard({
   const [activeTab, setActiveTab] = useState<"orders" | "history" | "sales">("orders");
   const [orders, setOrders] = useState(initialOrders);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
+  const [dateFilter, setDateFilter] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const ORDERS_PER_PAGE = 10;
+
+  const filteredOrders = orders.filter((o) => {
+    if (statusFilter !== "ALL" && o.status !== statusFilter) return false;
+    if (dateFilter) {
+      const orderDate = new Date(o.createdAt).toISOString().slice(0, 10);
+      if (orderDate !== dateFilter) return false;
+    }
+    return true;
+  });
+
+  const totalPages = Math.max(1, Math.ceil(filteredOrders.length / ORDERS_PER_PAGE));
+  const paginatedOrders = filteredOrders.slice(
+    (currentPage - 1) * ORDERS_PER_PAGE,
+    currentPage * ORDERS_PER_PAGE
+  );
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [discount, setDiscount] = useState("");
   const [discountLoaded, setDiscountLoaded] = useState(false);
@@ -226,6 +295,9 @@ export default function OrdersDashboard({
           <p className="text-xs font-semibold uppercase tracking-wide text-oven-cream/50">Branch Admin</p>
           <h1 className="mt-1 font-display text-2xl text-oven-crust sm:text-3xl">{branch.name}</h1>
           <p className="mt-1 text-sm text-oven-cream/60">{branch.address}</p>
+          <div className="mt-3">
+            <PushNotificationButton branchId={branch.id} role="ADMIN" />
+          </div>
           <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 font-mono text-sm text-oven-cream/80">
             {branch.phone ? <span>{branch.phone}</span> : null}
             {branch.phone2 ? <span>{branch.phone2}</span> : null}
@@ -302,22 +374,55 @@ export default function OrdersDashboard({
         <div className="mt-8">
           <div className="mb-4 flex items-baseline justify-between">
             <h2 className="font-display text-xl text-oven-crust">
-              Orders <span className="text-oven-cream/50">({orders.length})</span>
+              Orders <span className="text-oven-cream/50">({filteredOrders.length})</span>
             </h2>
             <p className="text-xs text-oven-cream/50">Only orders placed for this branch are shown.</p>
           </div>
 
-          {orders.length === 0 ? (
+          <div className="mb-6 flex flex-wrap items-center gap-3">
+            <select
+              value={statusFilter}
+              onChange={(e) => { setStatusFilter(e.target.value as OrderStatus | "ALL"); setCurrentPage(1); }}
+              className="rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-3 py-2 text-sm text-oven-cream focus:border-oven-flame focus:outline-none"
+            >
+              <option value="ALL">All statuses</option>
+              {STATUS_OPTIONS.map((s) => (
+                <option key={s} value={s}>{s.charAt(0) + s.slice(1).toLowerCase()}</option>
+              ))}
+            </select>
+            <input
+              type="date"
+              value={dateFilter}
+              onChange={(e) => { setDateFilter(e.target.value); setCurrentPage(1); }}
+              className="rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-3 py-2 text-sm text-oven-cream focus:border-oven-flame focus:outline-none"
+            />
+            {(statusFilter !== "ALL" || dateFilter) ? (
+              <button
+                type="button"
+                onClick={() => { setStatusFilter("ALL"); setDateFilter(""); setCurrentPage(1); }}
+                className="text-xs text-oven-cream/50 underline hover:text-oven-cream"
+              >
+                Clear filters
+              </button>
+            ) : null}
+          </div>
+
+          {filteredOrders.length === 0 ? (
             <div className="rounded-xl2 border border-oven-cream/10 bg-oven-teal-deep/40 p-10 text-center text-oven-cream/60">
               No orders for this branch yet.
             </div>
           ) : (
             <ul className="space-y-4">
-              {orders.map((order) => (
+              {paginatedOrders.map((order) => (
                 <li key={order.id} className="rounded-xl2 border border-oven-cream/10 bg-oven-teal-deep/40 p-5 shadow-card">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <p className="font-display text-lg text-oven-cream">{order.customerName}</p>
+                        {order.isAdminOrder ? (
+                          <span className="mt-1 inline-block rounded-full bg-oven-flame/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-oven-flame-light">
+                            Admin Order
+                          </span>
+                        ) : null}
                       <p className="font-mono text-sm text-oven-cream/60">{order.customerPhone}</p>
                       {order.customerEmail ? (
                         <p className="text-sm text-oven-cream/50">{order.customerEmail}</p>
@@ -354,7 +459,17 @@ export default function OrdersDashboard({
                           {line.sizeLabel ? ` (${line.sizeLabel})` : ""}
                         </span>
                         <span className="font-mono text-oven-cream/60">{formatRs(line.lineTotal)}</span>
-                      </li>
+      
+                  <div className="mt-3 flex justify-end">
+                    <button
+                      type="button"
+                      onClick={() => printReceipt(order, branch)}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-1.5 text-xs font-semibold text-oven-cream/80 transition-colors hover:border-oven-flame hover:text-oven-flame-light"
+                    >
+                      Print Receipt
+                    </button>
+                  </div>
+                </li>
                     ))}
                   </ul>
 
@@ -378,6 +493,30 @@ export default function OrdersDashboard({
               ))}
             </ul>
           )}
+        </div>
+      ) : null}
+
+      {filteredOrders.length > ORDERS_PER_PAGE ? (
+        <div className="mt-6 flex items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-3 py-1.5 text-xs text-oven-cream disabled:opacity-40"
+          >
+            Prev
+          </button>
+          <span className="text-xs text-oven-cream/60">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            type="button"
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-3 py-1.5 text-xs text-oven-cream disabled:opacity-40"
+          >
+            Next
+          </button>
         </div>
       ) : null}
 

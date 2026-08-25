@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { orderSchema } from "@/lib/validations";
 import { isRateLimited, getClientIp } from "@/lib/rate-limit";
 import { getAdminSession } from "@/lib/auth";
+import { sendNewOrderNotification } from "@/lib/services/pushNotificationService";
 
 export const runtime = "nodejs";
 
@@ -154,8 +155,14 @@ export async function POST(request: Request) {
       select: { id: true, subtotal: true, discountAmount: true, total: true },
     });
 
+    if (branch?.id) {
+      sendNewOrderNotification(order.id, branch.id, data.customerName, total).catch((err) =>
+        console.error("New-order push notification failed:", err)
+      );
+    }
+
     return NextResponse.json(
-      { message: "Order received — we'll call you shortly to confirm.", order },
+      { message: "Order received â€” we'll call you shortly to confirm.", order },
       { status: 201 }
     );
   } catch (error) {

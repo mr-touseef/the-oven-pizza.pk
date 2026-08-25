@@ -18,46 +18,74 @@ export default function AddToCartButton({
   const { addItem } = useCart();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   function handleConfirm() {
-    addItem(item);
+    addItem(item, quantity);
     setConfirmOpen(false);
     setJustAdded(true);
+    setQuantity(1);
     window.setTimeout(() => setJustAdded(false), 1600);
   }
 
   const confirmTitle = item.sizeLabel
-    ? `Add ${item.name} (${item.sizeLabel}) to cart?`
-    : `Add ${item.name} to cart?`;
+    ? `Add ${quantity} × ${item.name} (${item.sizeLabel}) to cart?`
+    : `Add ${quantity} × ${item.name} to cart?`;
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setConfirmOpen(true)}
-                  className={
-          className ||
-          "inline-flex items-center gap-2 rounded-xl2 border border-oven-flame/30 bg-oven-flame/10 px-5 py-2.5 font-mono text-sm font-medium text-oven-crust shadow-[0_4px_20px_rgba(255,140,60,0.25)] transition-all hover:-translate-y-0.5 hover:border-oven-flame-light hover:bg-oven-flame/20 hover:shadow-[0_6px_24px_rgba(255,140,60,0.4)]"
-        }
-        aria-label={confirmTitle}
-      >
-        {justAdded ? (
-          <>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path
-                d="M5 13l4 4L19 7"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-            Added
-          </>
-        ) : (
-          label
-        )}
-      </button>
+      <div className="inline-flex items-center gap-2">
+        <div className="inline-flex items-center overflow-hidden rounded-xl2 border border-oven-cream/15 bg-oven-charcoal/40">
+          <button
+            type="button"
+            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            aria-label={`Decrease quantity for ${item.name}`}
+            className="px-2.5 py-2 text-sm text-oven-cream/70 transition-colors hover:bg-oven-cream/10 disabled:opacity-30"
+            disabled={quantity <= 1}
+          >
+            −
+          </button>
+          <span className="min-w-[1.5rem] px-1 text-center font-mono text-sm text-oven-cream">
+            {quantity}
+          </span>
+          <button
+            type="button"
+            onClick={() => setQuantity((q) => Math.min(20, q + 1))}
+            aria-label={`Increase quantity for ${item.name}`}
+            className="px-2.5 py-2 text-sm text-oven-cream/70 transition-colors hover:bg-oven-cream/10 disabled:opacity-30"
+            disabled={quantity >= 20}
+          >
+            +
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setConfirmOpen(true)}
+          className={
+            className ||
+            "inline-flex items-center gap-2 rounded-xl2 border border-oven-flame/30 bg-oven-flame/10 px-5 py-2.5 font-mono text-sm font-medium text-oven-crust shadow-[0_4px_20px_rgba(255,140,60,0.25)] transition-all hover:-translate-y-0.5 hover:border-oven-flame-light hover:bg-oven-flame/20 hover:shadow-[0_6px_24px_rgba(255,140,60,0.4)]"
+          }
+          aria-label={confirmTitle}
+        >
+          {justAdded ? (
+            <>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M5 13l4 4L19 7"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              Added
+            </>
+          ) : (
+            label
+          )}
+        </button>
+      </div>
 
       <ConfirmDialog
         open={confirmOpen}

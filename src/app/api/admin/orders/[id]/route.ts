@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { OrderStatus, Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getAdminSession } from "@/lib/auth";
+import { sendOrderStatusNotification } from '@/lib/services/pushNotificationService';
 
 export const runtime = "nodejs";
 
@@ -29,6 +30,17 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   }
 
   try {
+    const existingOrder = await prisma.order.findFirst({
+      where: { id: params.id, branchId: session.branch.id },
+      select: { status: true },
+    });
+
+    if (!existingOrder) {
+      return NextResponse.json({ message: "Order not found." }, { status: 404 });
+    }
+
+    const oldStatus = existingOrder.status;
+
     const result = await prisma.order.updateMany({
       where: { id: params.id, branchId: session.branch.id },
       data: { status: status as OrderStatus },
@@ -36,6 +48,14 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     if (result.count === 0) {
       return NextResponse.json({ message: "Order not found." }, { status: 404 });
+    }
+
+    if (oldStatus !== status) {
+      sendOrderStatusNotification(
+        params.id,
+        session.branch.id,
+        status
+      ).catch((err) => console.error("Push notification failed:", err));
     }
 
     return NextResponse.json({ message: "Order updated." });

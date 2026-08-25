@@ -6,6 +6,7 @@ import type { Branch } from "@prisma/client";
 import { useCart } from "@/context/CartContext";
 import { formatRs } from "@/lib/types";
 import { orderSchema } from "@/lib/validations";
+import { PushNotificationButton } from '@/components/PushNotificationButton';
 
 type OrderType = "DELIVERY" | "PICKUP";
 
@@ -318,6 +319,12 @@ export default function CartView({ branches, isAdmin }: { branches: Branch[]; is
               {checkoutErrors.orderType ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.orderType}</p> : null}
             </div>
 
+            <p className="mt-2 text-xs text-oven-cream/50">
+              {orderType === "DELIVERY"
+                ? "Delivery usually takes 30–45 minutes, depending on your area and how busy the branch is."
+                : "Pickup orders are usually ready in 20–30 minutes."}
+            </p>
+
             {orderType === "DELIVERY" ? (
               <div>
                 <label htmlFor="checkout-address" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
@@ -455,6 +462,11 @@ export default function CartView({ branches, isAdmin }: { branches: Branch[]; is
           </div>
         </div>
 
+        {branchId && (
+          <div style={{ marginTop: "16px", textAlign: "center" }}>
+            <PushNotificationButton branchId={branchId} />
+          </div>
+        )}
         <p style={{ marginTop: "24px", textAlign: "center", fontSize: "12px" }}>
           Thank you for ordering from The Oven Pizza!
         </p>

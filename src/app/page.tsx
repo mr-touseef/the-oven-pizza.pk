@@ -2,18 +2,19 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import type { MenuCategoryWithItems, Deal } from "@/lib/types";
 import Hero from "@/components/Hero";
+import MenuSearch from "@/components/MenuSearch";
 import MenuSection from "@/components/MenuSection";
 import DealsSection from "@/components/DealsSection";
 import BranchesSection from "@/components/BranchesSection";
 import ContactSection from "@/components/ContactSection";
 
 export const metadata: Metadata = {
-  title: "Menu — Pizzas, Burgers, Shawarma, Drinks & Deals",
+  title: "Menu â€” Pizzas, Burgers, Shawarma, Drinks & Deals",
   description:
     "Browse the full menu at The Oven Pizza: stone-baked pizzas, burgers, shawarma, wings, coffee, drinks, and the Happy Student Deals, across all branches.",
 };
 
-// Menu content changes infrequently — revalidate every 5 minutes so edits
+// Menu content changes infrequently â€” revalidate every 5 minutes so edits
 // made directly in the database show up without a full redeploy.
 export const revalidate = 300;
 
@@ -63,6 +64,8 @@ export default async function HomePage() {
     <>
       <Hero />
 
+      <MenuSearch categories={categories} />
+
       {dbUnavailable ? (
         <div className="container-page py-16">
           <div
@@ -81,7 +84,7 @@ export default async function HomePage() {
                 npm run db:seed
               </code>{" "}
               against your <code className="rounded bg-oven-charcoal/60 px-1.5 py-0.5 font-mono text-sm">DATABASE_URL</code>, then
-              refresh. Otherwise, please call us directly — see the Contact section below.
+              refresh. Otherwise, please call us directly â€” see the Contact section below.
             </p>
           </div>
         </div>
@@ -91,7 +94,7 @@ export default async function HomePage() {
         id="pizzas"
         eyebrow="Stone-baked, made to order"
         title="Pizzas"
-        tagline="From classic Chicken Tikka to the loaded Oven Special Stuff — every pie is baked fresh per order."
+        tagline="From classic Chicken Tikka to the loaded Oven Special Stuff â€” every pie is baked fresh per order."
         categories={pizzaCategories}
       />
 
