@@ -269,12 +269,14 @@ export default function CartView({ branches, isAdmin }: { branches: Branch[]; is
             <span className="font-mono">{formatRs(total)}</span>
           </div>
 
-          <button type="button" onClick={() => window.print()} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-flame-gradient px-6 py-3 text-sm font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.01]">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2M6 14h12v7H6v-7Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-            </svg>
-            Print Receipt
-          </button>
+          {isAdmin && (
+            <button type="button" onClick={() => window.print()} className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-full bg-flame-gradient px-6 py-3 text-sm font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.01]">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M6 9V3h12v6M6 18H4a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1h16a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-2M6 14h12v7H6v-7Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+              </svg>
+              Print Receipt
+            </button>
+          )}
         </div>
 
         <div className="mt-8 ml-auto max-w-sm rounded-xl2 border border-oven-flame/25 bg-oven-teal-deep/50 p-6 shadow-card">
