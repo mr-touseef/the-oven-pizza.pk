@@ -181,7 +181,7 @@ export async function sendNewOrderNotification(
     }
 
     const payload = JSON.stringify({
-      title: '?? New Order',
+      title: 'New Order',
       body: `${customerName} placed an order � Rs ${total}`,
       orderId,
       branchId,
