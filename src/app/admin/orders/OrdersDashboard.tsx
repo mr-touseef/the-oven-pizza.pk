@@ -1,7 +1,7 @@
 ﻿"use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Branch, Order, OrderLine, OrderStatus } from "@prisma/client";
 import { formatRs } from "@/lib/types";
 
@@ -26,70 +26,7 @@ export default function OrdersDashboard({
 }) {
   const router = useRouter();
   const [orders, setOrders] = useState(initialOrders);
-  const [loggingOut, setLoggingOut] = useState(false);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const [discount, setDiscount] = useState("");
-  const [discountLoaded, setDiscountLoaded] = useState(false);
-  const [discountSaving, setDiscountSaving] = useState(false);
-  const [discountError, setDiscountError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function fetchDiscount() {
-      try {
-        const res = await fetch("/api/settings/discount");
-        if (res.ok) {
-          const data = await res.json();
-          setDiscount(String(data.discountPercent || 0));
-        }
-      } catch (error) {
-        console.error("Failed to fetch discount:", error);
-      } finally {
-        setDiscountLoaded(true);
-      }
-    }
-    fetchDiscount();
-  }, []);
-
-  // This page is only reachable behind the admin-authenticated branch route,
-  // so posting from here assumes that route-level protection is in place.
-  // The /api/settings/discount POST handler should still independently verify
-  // the admin session itself (never trust the caller's route alone) so this
-  // endpoint stays safe even if it's ever called from somewhere else.
-  async function handleDiscountChange(value: string) {
-    if (value === "") {
-      setDiscount("");
-      return;
-    }
-    const num = Number(value);
-    if (Number.isNaN(num)) return;
-    const clamped = Math.min(100, Math.max(0, num));
-    setDiscount(String(clamped));
-    setDiscountError(null);
-    setDiscountSaving(true);
-
-    try {
-      const res = await fetch("/api/settings/discount", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ discountPercent: clamped }),
-      });
-      if (!res.ok) {
-        setDiscountError("Couldn't save discount.");
-      }
-    } catch (error) {
-      console.error("Failed to save discount:", error);
-      setDiscountError("Couldn't save discount.");
-    } finally {
-      setDiscountSaving(false);
-    }
-  }
-
-  async function handleLogout() {
-    setLoggingOut(true);
-    await fetch("/api/admin/logout", { method: "POST" });
-    router.push("/admin/login");
-    router.refresh();
-  }
 
   async function handleStatusChange(orderId: string, status: OrderStatus) {
     setUpdatingId(orderId);
@@ -110,84 +47,41 @@ export default function OrdersDashboard({
 
   return (
     <div className="container-page py-10 sm:py-14">
-      <div className="flex flex-col gap-4 border-b border-oven-cream/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 border-b border-oven-cream/10 pb-6">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-oven-cream/50">Branch Admin</p>
-          <h1 className="mt-1 font-display text-2xl text-oven-crust sm:text-3xl">{branch.name}</h1>
-          <p className="mt-1 text-sm text-oven-cream/60">{branch.address}</p>
-          <p className="mt-1 flex flex-wrap gap-x-3 gap-y-1 font-mono text-sm text-oven-cream/80">
-            {branch.phone ? <span>{branch.phone}</span> : null}
-            {branch.phone2 ? <span>{branch.phone2}</span> : null}
-          </p>
-        </div>
-
-        <div className="flex flex-col items-start gap-3 sm:items-end">
-          <label className="flex items-center gap-2 rounded-full border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2 text-sm text-oven-cream/80">
-            <span className="whitespace-nowrap font-semibold">Discount (%)</span>
-            {discountLoaded ? (
-              <input
-                type="number"
-                min={0}
-                max={100}
-                value={discount}
-                onChange={(e) => handleDiscountChange(e.target.value)}
-                placeholder="0"
-                className="w-16 rounded-md border border-oven-cream/15 bg-oven-charcoal/80 px-2 py-1 text-right font-mono text-oven-cream focus:border-oven-flame focus:outline-none"
-              />
-            ) : (
-              <span className="h-6 w-16 animate-pulse rounded-md bg-oven-charcoal/60" />
-            )}
-          </label>
-          {discountError ? <p className="text-xs text-red-400">{discountError}</p> : null}
-          {discountSaving ? <p className="text-xs text-oven-cream/40">Saving...</p> : null}
-
-          <button
-            onClick={handleLogout}
-            disabled={loggingOut}
-            className="inline-flex h-fit items-center gap-2 self-start rounded-full border border-oven-cream/15 px-5 py-2.5 text-sm font-semibold text-oven-cream/80 transition-colors hover:border-oven-flame hover:text-oven-flame-light disabled:opacity-60 sm:self-end"
-          >
-            {loggingOut ? "Signing out..." : "Log Out"}
-          </button>
+          <h1 className="mt-1 font-display text-2xl text-oven-crust">{branch.name}</h1>
         </div>
       </div>
 
       <div className="mt-8">
-        <div className="mb-4 flex items-baseline justify-between">
-          <h2 className="font-display text-xl text-oven-crust">
-            Orders <span className="text-oven-cream/50">({orders.length})</span>
-          </h2>
-          <p className="text-xs text-oven-cream/50">Only orders placed for this branch are shown.</p>
-        </div>
+        <h2 className="font-display text-xl text-oven-crust mb-4">Orders ({orders.length})</h2>
 
         {orders.length === 0 ? (
           <div className="rounded-xl2 border border-oven-cream/10 bg-oven-teal-deep/40 p-10 text-center text-oven-cream/60">
-            No orders for this branch yet.
+            No orders.
           </div>
         ) : (
           <ul className="space-y-4">
             {orders.map((order) => (
-              <li key={order.id} className="rounded-xl2 border border-oven-cream/10 bg-oven-teal-deep/40 p-5 shadow-card">
+              <li key={order.id} className="rounded-xl2 border border-oven-cream/10 bg-oven-teal-deep/40 p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div>
                     <p className="font-display text-lg text-oven-cream">{order.customerName}</p>
-                    <p className="font-mono text-sm text-oven-cream/60">{order.customerPhone}</p>
-                    {order.customerEmail ? (
-                      <p className="text-sm text-oven-cream/50">{order.customerEmail}</p>
-                    ) : null}
-                    <p className="mt-1 text-xs text-oven-cream/40">
+                    <p className="text-xs text-oven-cream/40 mt-1">
                       {new Date(order.createdAt).toLocaleString("en-PK")}
                     </p>
                   </div>
 
                   <div className="flex flex-col items-end gap-2">
-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${STATUS_STYLES[order.status]}`}>
+                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${STATUS_STYLES[order.status]}`}>
                       {order.status}
                     </span>
                     <select
                       value={order.status}
                       disabled={updatingId === order.id}
                       onChange={(e) => handleStatusChange(order.id, e.target.value as OrderStatus)}
-                      className="rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-2.5 py-1.5 text-xs text-oven-cream focus:border-oven-flame focus:outline-none"
+                      className="rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-2.5 py-1.5 text-xs text-oven-cream"
                     >
                       {STATUS_OPTIONS.map((s) => (
                         <option key={s} value={s}>
@@ -200,31 +94,16 @@ export default function OrdersDashboard({
 
                 <ul className="mt-4 divide-y divide-oven-cream/10 border-t border-oven-cream/10 pt-3">
                   {order.lines.map((line) => (
-                    <li key={line.id} className="flex items-center justify-between gap-3 py-1.5 text-sm">
-                      <span className="text-oven-cream/80">
-                        {line.quantity}x {line.name}
-                        {line.sizeLabel ? ` (${line.sizeLabel})` : ""}
-                      </span>
-                      <span className="font-mono text-oven-cream/60">{formatRs(line.lineTotal)}</span>
+                    <li key={line.id} className="flex justify-between py-1.5 text-sm">
+                      <span>{line.quantity}x {line.name}</span>
+                      <span>{formatRs(line.lineTotal)}</span>
                     </li>
                   ))}
                 </ul>
 
-                {order.notes ? (
-                  <p className="mt-3 text-sm text-oven-cream/50">
-                    <span className="font-semibold text-oven-cream/70">Notes: </span>
-                    {order.notes}
-                  </p>
-                ) : null}
-
-                <div className="mt-3 flex items-center justify-between border-t border-oven-cream/10 pt-3">
-                  <span className="text-sm text-oven-cream/60">
-                    Subtotal {formatRs(order.subtotal)}
-                    {order.discountAmount > 0 ? ` - Discount ${formatRs(order.discountAmount)}` : ""}
-                  </span>
-                  <span className="font-mono text-base font-semibold text-oven-crust">
-                    {formatRs(order.total)}
-                  </span>
+                <div className="mt-3 flex justify-between border-t border-oven-cream/10 pt-3 font-semibold">
+                  <span>Total</span>
+                  <span className="text-oven-crust">{formatRs(order.total)}</span>
                 </div>
               </li>
             ))}
