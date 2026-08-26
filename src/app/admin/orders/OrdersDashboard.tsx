@@ -44,7 +44,10 @@ const STATUS_STYLES: Record<OrderStatus, string> = {
 
 function printReceipt(order: OrderWithLines, branch: Branch) {
   const receiptWindow = window.open("", "_blank", "width=380,height=600");
-  if (!receiptWindow) return;
+  if (!receiptWindow) {
+    alert("Popup blocked! Please allow popups for this site to print receipts.");
+    return;
+  }
 
   const linesHtml = order.lines
     .map(
@@ -87,8 +90,10 @@ function printReceipt(order: OrderWithLines, branch: Branch) {
     </html>
   `);
   receiptWindow.document.close();
-  receiptWindow.focus();
-  receiptWindow.print();
+  receiptWindow.onload = () => {
+    receiptWindow.focus();
+    receiptWindow.print();
+  };
 }
 
 function todayIso() {
