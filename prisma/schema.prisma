@@ -239,6 +239,7 @@ model PushSubscription {
   id         String             @id @default(cuid())
   branchId   String
   branch     Branch             @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  orderId    String?
   endpoint   String             @unique
   p256dh     String
   auth       String
@@ -247,4 +248,5 @@ model PushSubscription {
 
   @@index([branchId])
   @@index([role])
+  @@index([orderId])
 }

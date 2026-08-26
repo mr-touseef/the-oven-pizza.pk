@@ -5,10 +5,11 @@ import { usePushNotifications } from '@/lib/hooks/usePushNotifications';
 
 interface PushNotificationButtonProps {
   branchId: string;
+  orderId?: string;
   role?: 'CUSTOMER' | 'ADMIN';
 }
 
-export function PushNotificationButton({ branchId, role = 'CUSTOMER' }: PushNotificationButtonProps) {
+export function PushNotificationButton({ branchId, orderId, role = 'CUSTOMER' }: PushNotificationButtonProps) {
   const { isSupported, isSubscribed, isLoading, error, subscribe, unsubscribe } =
     usePushNotifications(branchId, role);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -24,7 +25,7 @@ export function PushNotificationButton({ branchId, role = 'CUSTOMER' }: PushNoti
         await unsubscribe();
         setSuccessMessage('Notifications disabled');
       } else {
-        await subscribe(branchId);
+        await subscribe(branchId, orderId);
         setSuccessMessage('Notifications enabled! You will receive order updates.');
       }
     } catch (err) {

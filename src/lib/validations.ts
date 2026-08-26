@@ -38,7 +38,7 @@ export const orderSchema = z
     customerName: z.string().trim().min(2, "Enter your full name (at least 2 characters).").max(80, "Name is too long."),
     customerPhone: z.string().trim().regex(phoneRegex, "Enter a valid Pakistani phone number, e.g. 0300-1234567."),
     customerEmail: z.union([z.string().trim().email("Enter a valid email address."), z.literal("")]).optional().transform((v) => (v ? v : undefined)),
-    branchId: z.string().min(1).optional(),
+    branchId: z.string().min(1, "Choose a branch."),
     orderType: z.enum(orderTypeValues, { errorMap: () => ({ message: "Choose delivery or pickup." }) }).default("DELIVERY"),
     deliveryAddress: z.string().trim().max(300).optional().or(z.literal("")).transform((v) => (v ? v : undefined)),
     notes: z.string().trim().max(500).optional().or(z.literal("")).transform((v) => (v ? v : undefined)),

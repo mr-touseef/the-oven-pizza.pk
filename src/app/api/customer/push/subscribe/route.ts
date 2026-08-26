@@ -14,6 +14,7 @@ export async function POST(req: NextRequest) {
     }
 
     const branchId = req.nextUrl.searchParams.get('branchId') || subscription.branchId;
+    const orderId = req.nextUrl.searchParams.get('orderId') || subscription.orderId || null;
     const roleParam = req.nextUrl.searchParams.get('role') || subscription.role;
     const role: PushSubscriberRole =
       roleParam === 'ADMIN' ? PushSubscriberRole.ADMIN : PushSubscriberRole.CUSTOMER;
@@ -33,9 +34,11 @@ export async function POST(req: NextRequest) {
         p256dh: subscription.keys.p256dh,
         auth: subscription.keys.auth,
         role,
+        orderId,
       },
       create: {
         branchId,
+        orderId,
         endpoint: subscription.endpoint,
         p256dh: subscription.keys.p256dh,
         auth: subscription.keys.auth,

@@ -5,7 +5,7 @@ interface UsePushNotificationsReturn {
   isSubscribed: boolean;
   isLoading: boolean;
   error: string | null;
-  subscribe: (branchId: string) => Promise<void>;
+  subscribe: (branchId: string, orderId?: string) => Promise<void>;
   unsubscribe: () => Promise<void>;
 }
 
@@ -44,7 +44,7 @@ export function usePushNotifications(
     }
   };
 
-  const subscribe = async (branchIdParam: string) => {
+  const subscribe = async (branchIdParam: string, orderId?: string) => {
     setIsLoading(true);
     setError(null);
 

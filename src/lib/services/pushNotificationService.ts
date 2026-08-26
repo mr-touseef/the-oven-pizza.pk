@@ -16,7 +16,7 @@ export async function sendOrderStatusNotification(
 ) {
   try {
     const subscriptions = await prisma.pushSubscription.findMany({
-      where: { branchId, role: PushSubscriberRole.CUSTOMER },
+      where: { orderId, role: PushSubscriberRole.CUSTOMER },
     });
 
     if (subscriptions.length === 0) {

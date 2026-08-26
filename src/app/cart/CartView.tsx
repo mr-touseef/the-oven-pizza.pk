@@ -159,6 +159,7 @@ export default function CartView({ branches, isAdmin }: { branches: Branch[]; is
         <p className="mt-3 max-w-md text-oven-cream/70">
           Order <span className="font-mono text-oven-crust">#{orderConfirmation.id.slice(-8)}</span> for <span className="font-mono text-oven-crust">{formatRs(orderConfirmation.total)}</span> has been received. We will call you shortly to confirm.
         </p>
+        <PushNotificationButton branchId={branchId || ''} orderId={orderConfirmation.id} />
         <div className="mt-8 flex flex-col gap-3 sm:flex-row">
           <Link href="/#pizzas" className="rounded-full bg-flame-gradient px-7 py-3.5 text-base font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.02]">
             Order Something Else
@@ -355,7 +356,7 @@ export default function CartView({ branches, isAdmin }: { branches: Branch[]; is
               <label htmlFor="checkout-phone" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
                 Phone number
               </label>
-              <input id="checkout-phone" type="tel" autoComplete="tel" value={customerPhone} onChange={(e) => setCustomerPhone(e.target.value)} aria-invalid={Boolean(checkoutErrors.customerPhone)} className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="0300-1234567" />
+              <input id="checkout-phone" type="tel" autoComplete="tel" inputMode="numeric" maxLength={11} value={customerPhone} onChange={(e) => { const digits = e.target.value.replace(/\D/g, ''); if (digits.length <= 11) setCustomerPhone(digits); }} aria-invalid={Boolean(checkoutErrors.customerPhone)} className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="0300-1234567" />
               {checkoutErrors.customerPhone ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.customerPhone}</p> : null}
             </div>
 
