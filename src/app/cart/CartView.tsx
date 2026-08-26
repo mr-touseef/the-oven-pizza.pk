@@ -371,7 +371,7 @@ export default function CartView({ branches, isAdmin }: { branches: Branch[]; is
             {branches.length > 0 ? (
               <div>
                 <label htmlFor="checkout-branch" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
-                  Branch <span className="text-oven-cream/40">(optional)</span>
+                  Branch
                 </label>
                 <select id="checkout-branch" value={branchId} onChange={(e) => setBranchId(e.target.value)} className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream focus:border-oven-flame-light">
                   <option value="">No preference - call to confirm</option>
