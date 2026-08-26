@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Branch, Order, OrderLine, OrderStatus } from "@prisma/client";
 import { formatRs } from "@/lib/types";
 import { PushNotificationButton } from "@/components/PushNotificationButton";
@@ -130,6 +130,8 @@ export default function OrdersDashboard({
     currentPage * ORDERS_PER_PAGE
   );
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const knownOrderIds = useRef<Set<string>>(new Set(initialOrders.map((o) => o.id)));
   const [discount, setDiscount] = useState("");
   const [discountLoaded, setDiscountLoaded] = useState(false);
   const [discountSaving, setDiscountSaving] = useState(false);
@@ -162,6 +164,31 @@ export default function OrdersDashboard({
       }
     }
     fetchDiscount();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch("/api/admin/orders");
+        if (!res.ok) return;
+        const data = await res.json();
+        const freshOrders: OrderWithLines[] = data.orders ?? [];
+
+        const newOnes = freshOrders.filter((o) => !knownOrderIds.current.has(o.id));
+        if (newOnes.length > 0) {
+          newOnes.forEach((o) => knownOrderIds.current.add(o.id));
+          setOrders(freshOrders);
+          const latest = newOnes[0];
+          if (!latest) return;
+          setToast(`New order from ${latest.customerName} - ${formatRs(latest.total)}`);
+          setTimeout(() => setToast(null), 6000);
+        }
+      } catch (error) {
+        console.error("Failed to poll orders:", error);
+      }
+    }, 8000);
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -290,6 +317,11 @@ export default function OrdersDashboard({
 
   return (
     <div className="container-page py-10 sm:py-14">
+      {toast ? (
+        <div className="fixed right-4 top-4 z-50 max-w-xs rounded-xl2 border border-oven-flame/40 bg-oven-charcoal px-5 py-4 text-sm text-oven-cream shadow-ember">
+          {toast}
+        </div>
+      ) : null}
       <div className="flex flex-col gap-4 border-b border-oven-cream/10 pb-6 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-xs font-semibold uppercase tracking-wide text-oven-cream/50">Branch Admin</p>

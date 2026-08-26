@@ -129,8 +129,8 @@ export async function POST(request: Request) {
       }
     }
 
-    const adminSession = await getAdminSession();
-    const discountPercent = adminSession ? data.discountPercent : 0;
+    const appSettings = await prisma.appSettings.findUnique({ where: { id: "singleton" } });
+    const discountPercent = appSettings?.discountPercent ?? 0;
 
     const subtotal = resolvedLines.reduce((sum, l) => sum + l.lineTotal, 0);
     const discountAmount = Math.round((subtotal * discountPercent) / 100);
