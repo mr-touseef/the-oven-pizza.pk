@@ -8,11 +8,11 @@ import { hashPassword } from '@/lib/auth';
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, branchId, otp, newPassword } = body;
+    const { email, username, otp, newPassword } = body;
 
-    if (!email || !branchId || !otp || !newPassword) {
+    if (!email || !username || !otp || !newPassword) {
       return NextResponse.json(
-        { error: 'Email, branch ID, OTP, and new password required' },
+        { error: 'Email, branch username, OTP, and new password required' },
         { status: 400 }
       );
     }
@@ -26,10 +26,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const branch = await prisma.branch.findFirst({
+      where: { adminUsername: username, isActive: true },
+    });
+
+    if (!branch) {
+      return NextResponse.json(
+        { error: 'Invalid OTP' },
+        { status: 400 }
+      );
+    }
+
     // Find OTP record
     const otpRecord = await prisma.adminOTP.findFirst({
       where: {
-        branchId,
+        branchId: branch.id,
         contact: email,
       },
       orderBy: { createdAt: 'desc' },
@@ -44,7 +55,6 @@ export async function POST(request: NextRequest) {
 
     // Check if expired
     if (isOTPExpired(otpRecord.expiresAt)) {
-      // Delete expired OTP
       await prisma.adminOTP.delete({ where: { id: otpRecord.id } });
       return NextResponse.json(
         { error: 'OTP expired. Request a new one.' },
@@ -54,13 +64,11 @@ export async function POST(request: NextRequest) {
 
     // Check if OTP matches
     if (otpRecord.otp !== otp) {
-      // Increment attempts
       await prisma.adminOTP.update({
         where: { id: otpRecord.id },
         data: { attempts: otpRecord.attempts + 1 },
       });
 
-      // Check if max attempts reached
       if (otpRecord.attempts + 1 >= otpRecord.maxAttempts) {
         await prisma.adminOTP.delete({ where: { id: otpRecord.id } });
         return NextResponse.json(
@@ -77,9 +85,8 @@ export async function POST(request: NextRequest) {
 
     // OTP valid! Update password
     const passwordHash = await hashPassword(newPassword);
-
     await prisma.branch.update({
-      where: { id: branchId },
+      where: { id: branch.id },
       data: { passwordHash },
     });
 

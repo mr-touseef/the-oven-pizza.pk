@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -57,9 +58,17 @@ export default function LoginForm() {
       </div>
 
       <div>
-        <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
-          Password
-        </label>
+        <div className="mb-1.5 flex items-center justify-between">
+          <label htmlFor="password" className="block text-sm font-medium text-oven-cream/85">
+            Password
+          </label>
+          <Link
+            href="/admin/forgot-password"
+            className="text-xs font-medium text-oven-flame hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
         <input
           id="password"
           name="password"
@@ -69,7 +78,7 @@ export default function LoginForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-3.5 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame focus:outline-none focus:ring-1 focus:ring-oven-flame"
-          placeholder="••••••••"
+          placeholder="********"
         />
       </div>
 
@@ -84,7 +93,7 @@ export default function LoginForm() {
         disabled={submitting}
         className="w-full rounded-full bg-flame-gradient px-5 py-2.5 text-sm font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {submitting ? "Signing in…" : "Sign In"}
+        {submitting ? "Signing in..." : "Sign In"}
       </button>
     </form>
   );
