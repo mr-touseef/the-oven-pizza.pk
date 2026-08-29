@@ -32,7 +32,7 @@ export default function MenuSearch({ categories }: { categories: MenuCategoryWit
         </label>
         <div className="relative">
           <svg
-            className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-oven-cream/40"
+            className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-oven-crust/40"
             viewBox="0 0 24 24"
             fill="none"
             aria-hidden="true"
@@ -46,14 +46,14 @@ export default function MenuSearch({ categories }: { categories: MenuCategoryWit
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search for pizza, shawarma, coffee..."
-            className="w-full rounded-full border border-oven-cream/15 bg-oven-charcoal/60 py-3 pl-11 pr-4 text-oven-cream placeholder:text-oven-cream/40 focus:border-oven-flame-light focus:outline-none"
+            className="w-full rounded-full border border-oven-teal/20 bg-white py-3 pl-11 pr-4 text-oven-crust shadow-sm placeholder:text-oven-crust/40 focus:border-oven-flame-light focus:outline-none"
           />
         </div>
       </div>
 
       {query.trim() ? (
         <div className="mt-8">
-          <p className="mb-4 text-center text-sm text-oven-cream/50">
+          <p className="mb-4 text-center text-sm text-oven-crust/60">
             {results.length === 0
               ? `No items found for "${query}"`
               : `${results.length} result${results.length === 1 ? "" : "s"} for "${query}"`}

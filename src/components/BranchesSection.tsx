@@ -6,7 +6,7 @@ export default async function BranchesSection() {
   const branches = await getBranches();
 
   return (
-    <section id="branches" aria-labelledby="branches-heading" className="scroll-mt-24 bg-oven-teal-dark/40 py-16 sm:py-24">
+    <section id="branches" aria-labelledby="branches-heading" className="scroll-mt-24 bg-oven-teal-dark py-16 sm:py-24">
       <div className="container-page">
         <SectionHeading
           id="branches-heading"
@@ -27,7 +27,7 @@ export default async function BranchesSection() {
             className="mx-auto mt-12 max-w-lg rounded-xl2 border border-oven-flame/30 bg-oven-flame/10 p-6 text-center text-oven-cream/80"
           >
             Branch details are temporarily unavailable — please call us directly, or run{" "}
-            <code className="rounded bg-oven-charcoal/60 px-1.5 py-0.5 font-mono text-sm">
+            <code className="rounded bg-oven-teal-dark px-1.5 py-0.5 font-mono text-sm">
               npm run db:seed
             </code>{" "}
             if you&apos;re setting this project up for the first time.

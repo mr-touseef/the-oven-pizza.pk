@@ -6,18 +6,18 @@ const config: Config = {
     extend: {
       colors: {
         oven: {
-          teal: "#0B6E64",
-          "teal-dark": "#063E38",
-          "teal-deep": "#042B27",
-          charcoal: "#1B1512",
-          "charcoal-2": "#241C18",
-          char: "#120D0B",
-          flame: "#E8672C",
-          "flame-light": "#F4A93F",
-          crust: "#F2C879",
-          cream: "#FBF4E6",
-          parchment: "#F6EEDD",
-          smoke: "#8A9A96",
+          teal: "rgb(var(--oven-teal) / <alpha-value>)",
+          "teal-dark": "rgb(var(--oven-teal-dark) / <alpha-value>)",
+          "teal-deep": "rgb(var(--oven-teal-deep) / <alpha-value>)",
+          charcoal: "rgb(var(--oven-charcoal) / <alpha-value>)",
+          "charcoal-2": "rgb(var(--oven-charcoal-2) / <alpha-value>)",
+          char: "rgb(var(--oven-char) / <alpha-value>)",
+          flame: "rgb(var(--oven-flame) / <alpha-value>)",
+          "flame-light": "rgb(var(--oven-flame-light) / <alpha-value>)",
+          crust: "rgb(var(--oven-crust) / <alpha-value>)",
+          cream: "rgb(var(--oven-cream) / <alpha-value>)",
+          parchment: "rgb(var(--oven-parchment) / <alpha-value>)",
+          smoke: "rgb(var(--oven-smoke) / <alpha-value>)",
         },
       },
       fontFamily: {
@@ -27,8 +27,8 @@ const config: Config = {
       },
       backgroundImage: {
         "grain": "url('/images/grain.svg')",
-        "flame-gradient": "linear-gradient(135deg, #E8672C 0%, #F4A93F 100%)",
-        "teal-gradient": "linear-gradient(180deg, #063E38 0%, #042B27 100%)",
+        "flame-gradient": "linear-gradient(135deg, rgb(var(--oven-flame)) 0%, rgb(var(--oven-flame-light)) 100%)",
+        "teal-gradient": "linear-gradient(180deg, rgb(var(--oven-teal-dark)) 0%, rgb(var(--oven-teal-deep)) 100%)",
       },
       boxShadow: {
         card: "0 10px 30px -12px rgba(4, 43, 39, 0.35)",

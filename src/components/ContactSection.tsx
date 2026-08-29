@@ -13,14 +13,14 @@ export default function ContactSection() {
   const address = process.env.NEXT_PUBLIC_RESTAURANT_ADDRESS || "Zahid Iqbal Chowk, Chichawatni, Punjab, Pakistan";
 
   return (
-    <section id="contact" aria-labelledby="contact-heading" className="scroll-mt-24 bg-oven-teal-dark/40 py-16 sm:py-24">
+    <section id="contact" aria-labelledby="contact-heading" className="scroll-mt-24 bg-oven-teal-dark py-16 sm:py-24">
       <div className="container-page">
         <SectionHeading id="contact-heading" eyebrow="Order, reserve or ask" title="Order or Reserve a Table" tagline="Call us directly, or send a message and we'll ring you back." />
         <div className="mt-12 grid gap-8 lg:grid-cols-5">
           <div className="lg:col-span-2">
                        <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
               {BRANCHES.map((branch) => (
-                <div key={branch.name} className="rounded-xl2 border border-oven-cream/10 bg-oven-teal-deep/50 p-5 shadow-card">
+                <div key={branch.name} className="rounded-xl2 border border-oven-cream/10 bg-white shadow-sm p-5 shadow-card">
                   <h4 className="font-display text-base text-oven-crust">{branch.name}</h4>
                   <a href={`tel:${branch.phonePrimary.replace(/-/g, "")}`} className="mt-1 block font-mono text-sm text-oven-cream hover:text-oven-flame-light">{branch.phonePrimary}</a>
                   <a href={`tel:${branch.phoneSecondary.replace(/-/g, "")}`} className="block font-mono text-sm text-oven-cream/70 hover:text-oven-flame-light">{branch.phoneSecondary}</a>
@@ -31,7 +31,7 @@ export default function ContactSection() {
           </div>
 
           <div className="lg:col-span-3">
-            <div className="rounded-xl2 border border-oven-cream/10 bg-oven-teal-deep/50 p-6 shadow-card sm:p-8">
+            <div className="rounded-xl2 border border-oven-cream/10 bg-white shadow-sm p-6 shadow-card sm:p-8">
               <ContactForm />
             </div>
           </div>

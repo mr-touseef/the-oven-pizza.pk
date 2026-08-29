@@ -4,7 +4,7 @@ import AddToCartButton from "./AddToCartButton";
 
 export default function DealCard({ deal, index }: { deal: Deal; index: number }) {
   return (
-    <div className="group relative overflow-hidden rounded-xl2 border border-oven-flame/25 bg-gradient-to-br from-oven-teal-dark/60 to-oven-teal-deep/80 p-6 shadow-card transition-transform hover:-translate-y-1 hover:shadow-card-hover sm:p-7">
+    <div className="group relative overflow-hidden rounded-xl2 border border-oven-flame/25 bg-white p-6 shadow-card transition-transform hover:-translate-y-1 hover:shadow-card-hover sm:p-7">
       <div
         className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-flame-gradient opacity-20 blur-2xl transition-opacity group-hover:opacity-30"
         aria-hidden="true"

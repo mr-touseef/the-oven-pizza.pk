@@ -93,7 +93,7 @@ export default function ContactForm() {
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+          <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-oven-crust">
             Full name
           </label>
           <input
@@ -105,7 +105,7 @@ export default function ContactForm() {
             onChange={(e) => update("name", e.target.value)}
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? "name-error" : undefined}
-            className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-3 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light"
+            className="w-full rounded-lg border border-oven-cream/15 bg-oven-teal-dark/5 px-4 py-3 text-oven-crust placeholder:text-oven-crust/40 focus:border-oven-flame-light"
             placeholder="Ali Raza"
           />
           {errors.name ? (
@@ -116,7 +116,7 @@ export default function ContactForm() {
         </div>
 
         <div>
-          <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+          <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-oven-crust">
             Phone number
           </label>
           <input
@@ -128,7 +128,7 @@ export default function ContactForm() {
             onChange={(e) => update("phone", e.target.value)}
             aria-invalid={Boolean(errors.phone)}
             aria-describedby={errors.phone ? "phone-error" : undefined}
-            className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-3 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light"
+            className="w-full rounded-lg border border-oven-cream/15 bg-oven-teal-dark/5 px-4 py-3 text-oven-crust placeholder:text-oven-crust/40 focus:border-oven-flame-light"
             placeholder="0300-1234567"
           />
           {errors.phone ? (
@@ -141,8 +141,8 @@ export default function ContactForm() {
 
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
-          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
-            Email <span className="text-oven-cream/40">(optional)</span>
+          <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-oven-crust">
+            Email <span className="text-oven-crust/50">(optional)</span>
           </label>
           <input
             id="email"
@@ -153,7 +153,7 @@ export default function ContactForm() {
             onChange={(e) => update("email", e.target.value)}
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? "email-error" : undefined}
-            className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-3 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light"
+            className="w-full rounded-lg border border-oven-cream/15 bg-oven-teal-dark/5 px-4 py-3 text-oven-crust placeholder:text-oven-crust/40 focus:border-oven-flame-light"
             placeholder="you@example.com"
           />
           {errors.email ? (
@@ -164,7 +164,7 @@ export default function ContactForm() {
         </div>
 
         <div>
-          <label htmlFor="type" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+          <label htmlFor="type" className="mb-1.5 block text-sm font-medium text-oven-crust">
             This is about
           </label>
           <select
@@ -172,7 +172,7 @@ export default function ContactForm() {
             name="type"
             value={values.type}
             onChange={(e) => update("type", e.target.value as InquiryInput["type"])}
-            className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-3 text-oven-cream focus:border-oven-flame-light"
+            className="w-full rounded-lg border border-oven-cream/15 bg-oven-teal-dark/5 px-4 py-3 text-oven-crust focus:border-oven-flame-light"
           >
             <option value="ORDER">Placing an order</option>
             <option value="RESERVATION">Table reservation</option>
@@ -183,7 +183,7 @@ export default function ContactForm() {
       </div>
 
       <div>
-        <label htmlFor="message" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+        <label htmlFor="message" className="mb-1.5 block text-sm font-medium text-oven-crust">
           Message
         </label>
         <textarea
@@ -194,7 +194,7 @@ export default function ContactForm() {
           onChange={(e) => update("message", e.target.value)}
           aria-invalid={Boolean(errors.message)}
           aria-describedby={errors.message ? "message-error" : undefined}
-          className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-3 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light"
+          className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-teal-dark/5 px-4 py-3 text-oven-crust placeholder:text-oven-crust/40 focus:border-oven-flame-light"
           placeholder="e.g. 1 Medium Crown Crust, 5pc Hot Wings, delivered to..."
         />
         {errors.message ? (
@@ -206,7 +206,7 @@ export default function ContactForm() {
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
         <div>
-          <label htmlFor="branch" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+          <label htmlFor="branch" className="mb-1.5 block text-sm font-medium text-oven-crust">
             Nearest branch
           </label>
           <select
@@ -214,7 +214,7 @@ export default function ContactForm() {
             name="branch"
             value={values.branch}
             onChange={(e) => update("branch", e.target.value)}
-            className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-3 text-oven-cream focus:border-oven-flame-light sm:w-64"
+            className="w-full rounded-lg border border-oven-cream/15 bg-oven-teal-dark/5 px-4 py-3 text-oven-crust focus:border-oven-flame-light sm:w-64"
           >
             <option value="">Select a branch</option>
             <option value="Mian Channu">Mian Channu</option>
@@ -231,7 +231,7 @@ export default function ContactForm() {
           {status === "loading" ? (
             <>
               <span
-                className="h-4 w-4 animate-spin rounded-full border-2 border-oven-charcoal/40 border-t-oven-charcoal"
+                className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white"
                 aria-hidden="true"
               />
               Sending…
@@ -246,7 +246,7 @@ export default function ContactForm() {
         {serverMessage ? (
           <p
             className={`text-sm ${
-              status === "success" ? "text-emerald-400" : status === "error" ? "text-red-400" : "text-oven-cream/70"
+              status === "success" ? "text-emerald-400" : status === "error" ? "text-red-400" : "text-oven-crust/70"
             }`}
           >
             {serverMessage}

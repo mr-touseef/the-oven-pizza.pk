@@ -34,25 +34,25 @@ export default function AddToCartButton({
 
   return (
     <>
-      <div className="inline-flex items-center gap-2">
-        <div className="inline-flex items-center overflow-hidden rounded-xl2 border border-oven-cream/15 bg-oven-charcoal/40">
+      <div className="inline-flex w-full items-center gap-1.5">
+        <div className="inline-flex items-center overflow-hidden rounded-xl2 border border-oven-teal/20 bg-white/70">
           <button
             type="button"
             onClick={() => setQuantity((q) => Math.max(1, q - 1))}
             aria-label={`Decrease quantity for ${item.name}`}
-            className="px-2.5 py-2 text-sm text-oven-cream/70 transition-colors hover:bg-oven-cream/10 disabled:opacity-30"
+            className="px-2 py-1.5 text-xs text-oven-crust/70 transition-colors hover:bg-oven-teal/10 disabled:opacity-30"
             disabled={quantity <= 1}
           >
             −
           </button>
-          <span className="min-w-[1.5rem] px-1 text-center font-mono text-sm text-oven-cream">
+          <span className="min-w-[1.2rem] px-0.5 text-center font-mono text-xs text-oven-crust">
             {quantity}
           </span>
           <button
             type="button"
             onClick={() => setQuantity((q) => Math.min(20, q + 1))}
             aria-label={`Increase quantity for ${item.name}`}
-            className="px-2.5 py-2 text-sm text-oven-cream/70 transition-colors hover:bg-oven-cream/10 disabled:opacity-30"
+            className="px-2 py-1.5 text-xs text-oven-crust/70 transition-colors hover:bg-oven-teal/10 disabled:opacity-30"
             disabled={quantity >= 20}
           >
             +
@@ -64,7 +64,7 @@ export default function AddToCartButton({
           onClick={() => setConfirmOpen(true)}
           className={
             className ||
-            "inline-flex items-center gap-2 rounded-xl2 border border-oven-flame/30 bg-oven-flame/10 px-5 py-2.5 font-mono text-sm font-medium text-oven-crust shadow-[0_4px_20px_rgba(255,140,60,0.25)] transition-all hover:-translate-y-0.5 hover:border-oven-flame-light hover:bg-oven-flame/20 hover:shadow-[0_6px_24px_rgba(255,140,60,0.4)]"
+            "inline-flex items-center gap-2 flex-1 rounded-xl2 border border-oven-flame/30 bg-oven-flame/10 px-2.5 py-1.5 font-mono text-[0.7rem] font-medium leading-tight text-oven-crust shadow-[0_4px_20px_rgba(255,140,60,0.25)] transition-all hover:-translate-y-0.5 hover:border-oven-flame-light hover:bg-oven-flame/20 hover:shadow-[0_6px_24px_rgba(255,140,60,0.4)]"
           }
           aria-label={confirmTitle}
         >

@@ -46,8 +46,8 @@ export default function BackgroundVideo() {
       )}
 
       {/* Dark overlay + brand tint so foreground text stays readable at every scroll position */}
-      <div className="absolute inset-0 bg-oven-char/70" />
-      <div className="absolute inset-0 bg-gradient-to-b from-oven-char/85 via-oven-teal-deep/70 to-oven-char/90" />
+      
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white/40" />
       <div className="absolute inset-0 bg-grain opacity-[0.06] mix-blend-overlay" />
     </div>
   );

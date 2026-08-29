@@ -4,7 +4,7 @@ import { getDirectionsUrl } from "@/lib/maps";
 
 export default function BranchCard({ branch }: { branch: Branch }) {
   return (
-    <div className="overflow-hidden rounded-xl2 border border-oven-cream/10 bg-oven-teal-deep/50 shadow-card transition-transform hover:-translate-y-1 hover:shadow-card-hover">
+    <div className="overflow-hidden rounded-xl2 border border-oven-cream/10 bg-white shadow-card transition-transform hover:-translate-y-1 hover:shadow-card-hover">
       <div className="relative h-44 w-full">
         <Image
           src={branch.photoUrl}
@@ -13,7 +13,7 @@ export default function BranchCard({ branch }: { branch: Branch }) {
           sizes="(min-width: 1024px) 33vw, 100vw"
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-oven-teal-deep/90 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
       </div>
       <div className="p-6">
         <h3 className="font-display text-xl text-oven-crust">{branch.name}</h3>

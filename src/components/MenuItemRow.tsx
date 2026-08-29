@@ -5,49 +5,67 @@ import type { MenuItemWithPrices } from "@/lib/types";
 import { formatRs } from "@/lib/types";
 import AddToCartButton from "./AddToCartButton";
 
+const CARD_TINTS = [
+  "bg-orange-50",
+  "bg-green-50",
+  "bg-pink-50",
+  "bg-sky-50",
+  "bg-yellow-50",
+  "bg-purple-50",
+];
+
 export default function MenuItemRow({
   item,
   categoryName,
+  index = 0,
 }: {
   item: MenuItemWithPrices;
   categoryName?: string;
+  index?: number;
 }) {
   const onlyPrice = item.prices.length === 1 ? item.prices[0] : undefined;
+  const tint = CARD_TINTS[index % CARD_TINTS.length];
 
   return (
-    <li className="flex items-center gap-4 rounded-3xl border border-oven-cream/10 bg-oven-charcoal/30 p-4 transition-all duration-200 hover:border-oven-flame-light/40 hover:shadow-ember active:border-oven-flame-light/60 active:shadow-ember">
+    <li className={`overflow-hidden rounded-3xl border border-black/5 ${tint} shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-card-hover`}>
       {item.imageUrl ? (
-        <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full border border-oven-cream/10 bg-oven-charcoal/40 sm:h-28 sm:w-28">
+        <div
+          className={`relative h-24 w-full overflow-hidden sm:h-28 ${
+            categoryName?.toLowerCase().includes("burger") ? "bg-black" : ""
+          }`}
+        >
           <Image
             src={item.imageUrl}
             alt={item.name}
             fill
-            sizes="112px"
-           className="object-cover object-bottom"
+            sizes="(min-width: 640px) 320px, 100vw"
+            className={
+              categoryName?.toLowerCase().includes("burger")
+                ? "object-contain"
+                : "object-cover"
+            }
           />
         </div>
       ) : null}
 
-      <div className="flex min-w-0 flex-1 flex-col justify-between">
-        <div>
-          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <p className="font-display text-base leading-snug text-oven-cream sm:text-lg">{item.name}</p>
-            {item.badge ? (
-              <span className="rounded-full bg-oven-flame/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-oven-flame-light">
-                {item.badge}
-              </span>
-            ) : null}
-          </div>
-
-          {item.description ? (
-            <p className="mt-1 text-xs text-oven-cream/60 sm:text-sm">{item.description}</p>
+      <div className="p-2">
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+          <p className="font-display text-xs leading-snug text-oven-crust sm:text-sm">{item.name}</p>
+          {item.badge ? (
+            <span className="rounded-full bg-oven-flame/15 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-oven-flame">
+              {item.badge}
+            </span>
           ) : null}
         </div>
 
+        {item.description ? (
+          <p className="mt-1 line-clamp-1 text-xs text-oven-crust/60">{item.description}</p>
+        ) : null}
+
         <div className="mt-2">
           {onlyPrice ? (
-            <div className="flex items-center gap-3">
-              <span className="whitespace-nowrap font-mono text-sm text-oven-crust sm:text-base">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="whitespace-nowrap font-mono text-xs font-semibold text-oven-crust sm:text-sm">
                 {formatRs(onlyPrice.priceRs)}
               </span>
               <AddToCartButton
@@ -63,7 +81,7 @@ export default function MenuItemRow({
             </div>
           ) : (
             <div
-              className="flex flex-wrap gap-2"
+              className="flex flex-col gap-1.5"
               role="group"
               aria-label={`Choose a size for ${item.name}`}
             >
@@ -78,7 +96,7 @@ export default function MenuItemRow({
                     sizeLabel: price.label,
                     unitPrice: price.priceRs,
                   }}
-                  label={`${price.label} — ${formatRs(price.priceRs)}`}
+                  label={`${price.label} - ${formatRs(price.priceRs)}`}
                 />
               ))}
             </div>

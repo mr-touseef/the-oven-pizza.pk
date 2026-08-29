@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import CartIcon from "./CartIcon";
+import ThemeToggle from "./ThemeToggle";
 
 const LINKS = [
   { href: "/#pizzas", label: "Pizzas" },
@@ -50,10 +51,10 @@ export default function Navbar() {
         </Link>
 
         <div className="scrollbar-none flex-1 overflow-x-auto">
-          <ul className="flex items-center gap-5 whitespace-nowrap lg:justify-center lg:gap-7">
+          <ul className="flex items-center gap-5 whitespace-nowrap rounded-full bg-black/80 px-5 py-2.5 backdrop-blur-md lg:justify-center lg:gap-7">
             {LINKS.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className="text-sm font-medium text-oven-cream/80 transition-colors hover:text-oven-flame-light">
+                <a href={link.href} className="text-sm font-medium text-white/90 transition-colors hover:text-oven-flame-light">
                   {link.label}
                 </a>
               </li>
@@ -68,6 +69,9 @@ export default function Navbar() {
           </a>
         </div>
       </nav>
+      <div className="flex justify-center pb-2">
+        <ThemeToggle />
+      </div>
     </header>
   );
 }

@@ -24,7 +24,7 @@ export default function MenuSection({
       id={id}
       aria-labelledby={`${id}-heading`}
       className={`scroll-mt-24 py-16 sm:py-24 ${
-        tone === "teal" ? "bg-oven-teal-dark/40" : ""
+        tone === "teal" ? "bg-oven-teal-dark" : "bg-white"
       }`}
     >
       <div className="container-page">

@@ -124,8 +124,14 @@ export default async function RootLayout({
       : null;
 
   return (
-    <html lang="en" className={`${fraunces.variable} ${manrope.variable} ${jetbrainsMono.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${fraunces.variable} ${manrope.variable} ${jetbrainsMono.variable}`}>
       <body className="min-h-screen bg-oven-charcoal font-body text-oven-cream antialiased">
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(localStorage.getItem('oven-theme')==='old'){document.documentElement.classList.add('theme-old');}}catch(e){}",
+          }}
+        />
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-oven-flame focus:px-5 focus:py-3 focus:font-body focus:font-semibold focus:text-oven-charcoal"
