@@ -117,6 +117,7 @@ export default function OrdersDashboard({
   const [loggingOut, setLoggingOut] = useState(false);
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
   const [dateFilter, setDateFilter] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const ORDERS_PER_PAGE = 10;
 
@@ -125,6 +126,13 @@ export default function OrdersDashboard({
     if (dateFilter) {
       const orderDate = new Date(o.createdAt).toISOString().slice(0, 10);
       if (orderDate !== dateFilter) return false;
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.trim().toLowerCase();
+      const nameMatch = o.customerName?.toLowerCase().includes(q) ?? false;
+      const phoneMatch = o.customerPhone?.toLowerCase().includes(q) ?? false;
+      const emailMatch = o.customerEmail?.toLowerCase().includes(q) ?? false;
+      if (!nameMatch && !phoneMatch && !emailMatch) return false;
     }
     return true;
   });
@@ -433,10 +441,16 @@ export default function OrdersDashboard({
               onChange={(e) => { setDateFilter(e.target.value); setCurrentPage(1); }}
               className="rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-3 py-2 text-sm text-oven-cream focus:border-oven-flame focus:outline-none"
             />
-            {(statusFilter !== "ALL" || dateFilter) ? (
+            <input type="text"
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+              placeholder="Search name, phone, email..."
+              className="rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-3 py-2 text-sm text-oven-cream placeholder:text-oven-cream/40 focus:border-oven-flame focus:outline-none"
+            />
+            {(statusFilter !== "ALL" || dateFilter || searchQuery) ? (
               <button
                 type="button"
-                onClick={() => { setStatusFilter("ALL"); setDateFilter(""); setCurrentPage(1); }}
+                onClick={() => { setStatusFilter("ALL"); setDateFilter(""); setSearchQuery(""); setCurrentPage(1); }}
                 className="text-xs text-oven-cream/50 underline hover:text-oven-cream"
               >
                 Clear filters
