@@ -1,4 +1,5 @@
 import NewsletterForm from "./NewsletterForm";
+import Link from "next/link";
 
 export default function Footer() {
   const year = new Date().getFullYear();
@@ -11,14 +12,14 @@ export default function Footer() {
             The Oven <span className="text-oven-flame-light">Pizza</span>
           </p>
           <nav aria-label="Footer" className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-oven-cream/60">
-            <a href="/#pizzas" className="hover:text-oven-flame-light">Pizzas</a>
-            <a href="/#burgers" className="hover:text-oven-flame-light">Burgers</a>
-            <a href="/#shawarma" className="hover:text-oven-flame-light">Shawarma</a>
-            <a href="/#drinks" className="hover:text-oven-flame-light">Drinks</a>
-            <a href="/#deals" className="hover:text-oven-flame-light">Deals</a>
-            <a href="/#branches" className="hover:text-oven-flame-light">Branches</a>
-            <a href="/cart" className="hover:text-oven-flame-light">Cart</a>
-            <a href="/#contact" className="hover:text-oven-flame-light">Contact</a>
+            <Link href="/#pizzas" className="hover:text-oven-flame-light">Pizzas</Link>
+            <Link href="/#burgers" className="hover:text-oven-flame-light">Burgers</Link>
+            <Link href="/#shawarma" className="hover:text-oven-flame-light">Shawarma</Link>
+            <Link href="/#drinks" className="hover:text-oven-flame-light">Drinks</Link>
+            <Link href="/#deals" className="hover:text-oven-flame-light">Deals</Link>
+            <Link href="/#branches" className="hover:text-oven-flame-light">Branches</Link>
+            <Link href="/cart" className="hover:text-oven-flame-light">Cart</Link>
+            <Link href="/#contact" className="hover:text-oven-flame-light">Contact</Link>
           </nav>
         </div>
 
