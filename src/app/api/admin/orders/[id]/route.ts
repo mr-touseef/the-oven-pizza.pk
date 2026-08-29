@@ -11,7 +11,8 @@ const validStatuses = new Set(Object.values(OrderStatus));
 // Updates the status of a single order — scoped so a branch admin can only
 // ever touch an order that belongs to their own branch (the `branchId`
 // filter below, not just the order `id`, guards that).
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getAdminSession();
   if (!session) {
     return NextResponse.json({ message: "Not authenticated." }, { status: 401 });
@@ -31,7 +32,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
   try {
     const existingOrder = await prisma.order.findFirst({
-      where: { id: params.id, branchId: session.branch.id },
+      where: { id: id, branchId: session.branch.id },
       select: { status: true },
     });
 
@@ -42,7 +43,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     const oldStatus = existingOrder.status;
 
     const result = await prisma.order.updateMany({
-      where: { id: params.id, branchId: session.branch.id },
+      where: { id: id, branchId: session.branch.id },
       data: { status: status as OrderStatus },
     });
 
@@ -52,7 +53,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
 
     if (oldStatus !== status) {
       sendOrderStatusNotification(
-        params.id,
+        id,
         session.branch.id,
         status
       ).catch((err) => console.error("Push notification failed:", err));

@@ -21,7 +21,7 @@ export { SESSION_COOKIE, hashPassword, verifyPassword, createSessionToken, verif
  * /admin/login in that case.
  */
 export async function getAdminSession() {
-  const token = cookies().get(SESSION_COOKIE)?.value;
+  const token = (await cookies()).get(SESSION_COOKIE)?.value;
   const session = verifySessionToken(token);
   if (!session) return null;
 

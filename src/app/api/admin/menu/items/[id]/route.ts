@@ -1,8 +1,9 @@
-﻿import { NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getAdminSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getAdminSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -35,7 +36,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   }
 
   const updated = await prisma.menuItem.update({
-    where: { id: params.id },
+    where: { id: id },
     data,
     include: { prices: { orderBy: { displayOrder: "asc" } } },
   });
@@ -43,13 +44,14 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   return NextResponse.json({ success: true, item: updated });
 }
 
-export async function DELETE(_request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const session = await getAdminSession();
   if (!session) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  await prisma.menuItem.delete({ where: { id: params.id } });
+  await prisma.menuItem.delete({ where: { id: id } });
 
   return NextResponse.json({ success: true });
 }
