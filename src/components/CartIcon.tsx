@@ -1,18 +1,15 @@
-"use client";
-
+﻿"use client";
 import Link from "next/link";
 import { useCart } from "@/context/CartContext";
-
 export default function CartIcon({ className }: { className?: string }) {
   const { itemCount } = useCart();
-
   return (
     <Link
       href="/cart"
       aria-label={`View cart, ${itemCount} item${itemCount === 1 ? "" : "s"}`}
       className={
         className ||
-        "relative flex h-10 w-10 items-center justify-center rounded-full border border-oven-cream/20 text-oven-cream transition-colors hover:border-oven-flame-light hover:text-oven-flame-light"
+        "relative flex h-10 w-10 items-center justify-center rounded-full border border-oven-cream/50 bg-oven-cream/10 text-oven-cream transition-colors hover:bg-oven-cream/20 hover:border-oven-flame-light hover:text-oven-flame-light"
       }
     >
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
