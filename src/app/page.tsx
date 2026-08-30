@@ -1,21 +1,19 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import type { MenuCategoryWithItems, Deal } from "@/lib/types";
 import Hero from "@/components/Hero";
 import MenuSearch from "@/components/MenuSearch";
-import MenuSection from "@/components/MenuSection";
+import MenuCategoryTabs from "@/components/MenuCategoryTabs";
 import DealsSection from "@/components/DealsSection";
 import BranchesSection from "@/components/BranchesSection";
 import ContactSection from "@/components/ContactSection";
 
 export const metadata: Metadata = {
-  title: "Menu â€” Pizzas, Burgers, Shawarma, Drinks & Deals",
+  title: "Menu – Pizzas, Burgers, Shawarma, Drinks & Deals",
   description:
     "Browse the full menu at The Oven Pizza: stone-baked pizzas, burgers, shawarma, wings, coffee, drinks, and the Happy Student Deals, across all branches.",
 };
 
-// Menu content changes infrequently â€” revalidate every 5 minutes so edits
-// made directly in the database show up without a full redeploy.
 export const revalidate = 300;
 
 async function getMenuData(): Promise<{
@@ -46,24 +44,11 @@ async function getMenuData(): Promise<{
   }
 }
 
-function bySlug(categories: MenuCategoryWithItems[], slugs: string[]) {
-  return slugs
-    .map((slug) => categories.find((c) => c.slug === slug))
-    .filter((c): c is MenuCategoryWithItems => Boolean(c));
-}
-
 export default async function HomePage() {
   const { categories, deals, dbUnavailable } = await getMenuData();
 
-  const pizzaCategories = bySlug(categories, ["the-oven-royalties"]);
-  const burgerCategories = bySlug(categories, ["burgers-and-more", "wraps-and-sandwiches"]);
-  const shawarmaCategories = bySlug(categories, ["shawarma", "wings-and-sides"]);
-  const drinkCategories = bySlug(categories, ["the-oven-coffees", "drinks-bar", "desserts"]);
-
   return (
     <>
-      <Hero />
-
       <MenuSearch categories={categories} />
 
       {dbUnavailable ? (
@@ -74,7 +59,7 @@ export default async function HomePage() {
           >
             <p className="font-display text-xl text-oven-flame-light">Menu is warming up</p>
             <p className="mt-2 text-oven-cream/80">
-              We couldn&apos;t reach the menu database just now. If you&apos;re setting this
+              We could not reach the menu database just now. If you are setting this
               project up for the first time, run{" "}
               <code className="rounded bg-oven-charcoal/60 px-1.5 py-0.5 font-mono text-sm">
                 npx prisma migrate deploy
@@ -83,44 +68,17 @@ export default async function HomePage() {
               <code className="rounded bg-oven-charcoal/60 px-1.5 py-0.5 font-mono text-sm">
                 npm run db:seed
               </code>{" "}
-              against your <code className="rounded bg-oven-charcoal/60 px-1.5 py-0.5 font-mono text-sm">DATABASE_URL</code>, then
-              refresh. Otherwise, please call us directly â€” see the Contact section below.
+              against your{" "}
+              <code className="rounded bg-oven-charcoal/60 px-1.5 py-0.5 font-mono text-sm">
+                DATABASE_URL
+              </code>
+              , then refresh. Otherwise, please call us directly – see the Contact section below.
             </p>
           </div>
         </div>
       ) : null}
 
-      <MenuSection
-        id="pizzas"
-        eyebrow="Stone-baked, made to order"
-        title="Pizzas"
-        tagline="From classic Chicken Tikka to the loaded Oven Special Stuff â€” every pie is baked fresh per order."
-        categories={pizzaCategories}
-      />
-
-      <MenuSection
-        id="burgers"
-        eyebrow="Flame-grilled"
-        title="Burgers & More"
-        tagline="Juicy patties, toasted buns, and hand-rolled wraps and sandwiches."
-        categories={burgerCategories}
-      />
-
-      <MenuSection
-        id="shawarma"
-        eyebrow="Char-rolled"
-        title="Shawarma, Wings & Sides"
-        tagline="Fresh-rolled shawarma, crispy wings, loaded fries and platters to share."
-        categories={shawarmaCategories}
-      />
-
-      <MenuSection
-        id="drinks"
-        eyebrow="Drinks & More"
-        title="Coffee, Drinks & Desserts"
-        tagline="Brewed coffee, hand-shaken drinks, cold bottles and a scoop of something sweet."
-        categories={drinkCategories}
-      />
+      <MenuCategoryTabs categories={categories} />
 
       <DealsSection deals={deals} />
 
@@ -130,3 +88,4 @@ export default async function HomePage() {
     </>
   );
 }
+

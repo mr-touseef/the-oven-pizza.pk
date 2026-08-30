@@ -6,11 +6,6 @@ import CartIcon from "./CartIcon";
 import ThemeToggle from "./ThemeToggle";
 
 const LINKS = [
-  { href: "/#pizzas", label: "Pizzas" },
-  { href: "/#burgers", label: "Burgers" },
-  { href: "/#shawarma", label: "Shawarma" },
-  { href: "/#drinks", label: "Drinks" },
-  { href: "/#deals", label: "Deals" },
   { href: "/#branches", label: "Branches" },
   { href: "/#contact", label: "Contact" },
 ];
@@ -28,7 +23,7 @@ export default function Navbar() {
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-colors duration-300 ${
-        scrolled ? "bg-oven-char/90 backdrop-blur-md shadow-card" : "bg-transparent"
+        scrolled ? "bg-oven-char/90 shadow-card" : "bg-transparent"
       }`}
     >
       <nav
@@ -75,3 +70,4 @@ export default function Navbar() {
     </header>
   );
 }
+

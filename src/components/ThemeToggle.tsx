@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 
@@ -25,10 +25,11 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      className="whitespace-nowrap rounded-full border border-oven-smoke/30 px-2 py-0.5 text-[10px] font-semibold text-oven-cream/80 transition-colors hover:border-oven-flame-light hover:text-oven-flame-light"
+      className="whitespace-nowrap rounded-full border border-oven-cream/50 bg-oven-cream/10 px-2 py-0.5 text-[10px] font-semibold text-oven-cream transition-colors hover:bg-oven-cream/20 hover:border-oven-flame-light hover:text-oven-flame-light"
       aria-label="Toggle previous theme"
     >
       {isOld ? "Light Mode" : "Dark Mode"}
     </button>
   );
 }
+
