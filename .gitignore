@@ -40,3 +40,4 @@ next-env.d.ts
 
 # local theme backup
 theme-backup-old/
+.env*
