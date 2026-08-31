@@ -1,25 +1,20 @@
-"use client";
-
+﻿"use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import CartIcon from "./CartIcon";
 import ThemeToggle from "./ThemeToggle";
-
 const LINKS = [
   { href: "/#branches", label: "Branches" },
   { href: "/#contact", label: "Contact" },
 ];
-
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
-
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-colors duration-300 ${
@@ -44,7 +39,6 @@ export default function Navbar() {
             The Oven <span className="text-oven-flame-light">Pizza</span>
           </span>
         </Link>
-
         <div className="scrollbar-none flex-1 overflow-x-auto">
           <ul className="flex items-center gap-5 whitespace-nowrap rounded-full bg-black/80 px-5 py-2.5 backdrop-blur-md lg:justify-center lg:gap-7">
             {LINKS.map((link) => (
@@ -56,12 +50,8 @@ export default function Navbar() {
             ))}
           </ul>
         </div>
-
         <div className="flex shrink-0 items-center gap-3">
           <CartIcon />
-          <a href={`tel:${(process.env.NEXT_PUBLIC_RESTAURANT_PHONE_PRIMARY || "0304-1114303").replace(/-/g, "")}`} className="hidden rounded-full bg-flame-gradient px-5 py-2.5 text-sm font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.03] focus-visible:scale-[1.03] sm:inline-block">
-            Call to Order
-          </a>
         </div>
       </nav>
       <div className="flex justify-center pb-2">
@@ -70,4 +60,3 @@ export default function Navbar() {
     </header>
   );
 }
-

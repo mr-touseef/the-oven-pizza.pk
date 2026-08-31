@@ -25,11 +25,12 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      className="whitespace-nowrap rounded-full border border-oven-cream/50 bg-oven-cream/10 px-2 py-0.5 text-[10px] font-semibold text-oven-cream transition-colors hover:bg-oven-cream/20 hover:border-oven-flame-light hover:text-oven-flame-light"
+      className="whitespace-nowrap rounded-full bg-flame-gradient px-3 py-1.5 text-[10px] font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.03] focus-visible:scale-[1.03]"
       aria-label="Toggle previous theme"
     >
       {isOld ? "Light Mode" : "Dark Mode"}
     </button>
   );
 }
+
 

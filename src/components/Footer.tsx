@@ -1,11 +1,9 @@
-import NewsletterForm from "./NewsletterForm";
+﻿import NewsletterForm from "./NewsletterForm";
 import Link from "next/link";
-
 export default function Footer() {
   const year = new Date().getFullYear();
-
   return (
-    <footer className="border-t border-oven-cream/10 bg-oven-char/80 py-10">
+    <footer className="relative border-t border-oven-cream/10 bg-oven-char py-10">
       <div className="container-page flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <p className="font-display text-lg text-oven-cream">
@@ -22,7 +20,6 @@ export default function Footer() {
             <Link href="/#contact" className="hover:text-oven-flame-light">Contact</Link>
           </nav>
         </div>
-
         <div className="w-full max-w-sm">
           <p className="font-display text-lg text-oven-crust">Stay tuned with us</p>
           <p className="mt-1 text-sm text-oven-cream/50">
@@ -34,7 +31,10 @@ export default function Footer() {
         </div>
       </div>
       <div className="container-page mt-8 border-t border-oven-cream/10 pt-6 text-xs text-oven-cream/40">
-        © {year} The Oven Pizza. All rights reserved. · Founder: Muhammad Touseef Haider · 0310-7591425
+        © {year} The Oven Pizza. All rights reserved. · Founder: Muhammad Touseef Haider · 0310-7591425 ·{" "}
+        <a href="mailto:muhammadtouseefhaider1@gmail.com" className="hover:text-oven-flame-light">
+          muhammadtouseefhaider1@gmail.com
+        </a>
       </div>
     </footer>
   );

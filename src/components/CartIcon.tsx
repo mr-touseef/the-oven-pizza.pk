@@ -9,7 +9,7 @@ export default function CartIcon({ className }: { className?: string }) {
       aria-label={`View cart, ${itemCount} item${itemCount === 1 ? "" : "s"}`}
       className={
         className ||
-        "relative flex h-10 w-10 items-center justify-center rounded-full border border-oven-cream/50 bg-oven-cream/10 text-oven-cream transition-colors hover:bg-oven-cream/20 hover:border-oven-flame-light hover:text-oven-flame-light"
+        "relative flex h-10 w-10 items-center justify-center rounded-full bg-flame-gradient text-oven-charcoal shadow-ember transition-transform hover:scale-[1.03] focus-visible:scale-[1.03]"
       }
     >
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
