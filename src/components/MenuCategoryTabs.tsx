@@ -1,15 +1,15 @@
 ﻿"use client";
-
 import { useState, useMemo } from "react";
-import type { MenuCategoryWithItems } from "@/lib/types";
+import type { MenuCategoryWithItems, Deal } from "@/lib/types";
 import MenuCategoryCard from "./MenuCategoryCard";
+import DealCard from "./DealCard";
+import SectionHeading from "./SectionHeading";
 
 type TabType = "all" | "pizza" | "burgers" | "shawarma" | "drinks" | "deals";
-
 interface MenuCategoryTabsProps {
   categories: MenuCategoryWithItems[];
+  deals: Deal[];
 }
-
 const TAB_CONFIG: Record<TabType, { label: string; slugs: string[] }> = {
   all: {
     label: "All",
@@ -45,22 +45,18 @@ const TAB_CONFIG: Record<TabType, { label: string; slugs: string[] }> = {
     slugs: [],
   },
 };
-
-export default function MenuCategoryTabs({ categories }: MenuCategoryTabsProps) {
+export default function MenuCategoryTabs({ categories, deals }: MenuCategoryTabsProps) {
   const [activeTab, setActiveTab] = useState<TabType>("all");
-
   // Get random 2 items from array
   const getRandomItems = (items: any[], count: number = 2) => {
     if (items.length <= count) return items;
     const shuffled = [...items].sort(() => Math.random() - 0.5);
     return shuffled.slice(0, count);
   };
-
   const getVisibleCategories = useMemo(() => {
     return () => {
       const selectedSlugs = TAB_CONFIG[activeTab].slugs;
       let filtered = categories.filter((cat) => selectedSlugs.includes(cat.slug));
-
       // If "all" tab, limit to 2 random items per category
       if (activeTab === "all") {
         filtered = filtered.map((category) => ({
@@ -68,13 +64,10 @@ export default function MenuCategoryTabs({ categories }: MenuCategoryTabsProps) 
           items: getRandomItems(category.items, 2),
         }));
       }
-
       return filtered;
     };
   }, [activeTab, categories]);
-
   const visibleCategories = getVisibleCategories();
-
   return (
     <section className="scroll-mt-24 bg-white py-16 sm:py-24">
       {/* Dark green header with tabs */}
@@ -102,10 +95,36 @@ export default function MenuCategoryTabs({ categories }: MenuCategoryTabsProps) 
           </div>
         </div>
       </div>
-
       {/* Menu categories grid */}
       <div className="container-page py-16">
-        {visibleCategories.length === 0 ? (
+        {activeTab === "deals" ? (
+          // Deals tab content
+          deals.length === 0 ? (
+            <div
+              role="alert"
+              className="rounded-lg border border-oven-flame/30 bg-oven-flame/10 p-6 text-center text-oven-cream"
+            >
+              <p className="font-display text-lg text-oven-flame-light">
+                No deals available
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="mb-12 flex flex-col items-center gap-3 text-center">
+                <SectionHeading
+                  eyebrow="10 AM – 5 PM"
+                  title="Happy Student Deals"
+                  tagline="Five combos priced for the daytime crowd – dine in or call ahead."
+                />
+              </div>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {deals.map((deal, i) => (
+                  <DealCard key={deal.id} deal={deal} index={i + 1} />
+                ))}
+              </div>
+            </>
+          )
+        ) : visibleCategories.length === 0 ? (
           <div
             role="alert"
             className="rounded-lg border border-oven-flame/30 bg-oven-flame/10 p-6 text-center text-oven-cream"
@@ -125,4 +144,3 @@ export default function MenuCategoryTabs({ categories }: MenuCategoryTabsProps) 
     </section>
   );
 }
-

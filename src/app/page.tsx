@@ -4,7 +4,6 @@ import type { MenuCategoryWithItems, Deal } from "@/lib/types";
 import Hero from "@/components/Hero";
 import MenuSearch from "@/components/MenuSearch";
 import MenuCategoryTabs from "@/components/MenuCategoryTabs";
-import DealsSection from "@/components/DealsSection";
 import BranchesSection from "@/components/BranchesSection";
 import ContactSection from "@/components/ContactSection";
 
@@ -78,14 +77,14 @@ export default async function HomePage() {
         </div>
       ) : null}
 
-      <MenuCategoryTabs categories={categories} />
+      <MenuCategoryTabs categories={categories} deals={deals} />
 
-      <DealsSection deals={deals} />
-
+      
       <BranchesSection />
 
       <ContactSection />
     </>
   );
 }
+
 
