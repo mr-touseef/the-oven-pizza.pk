@@ -29,7 +29,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             </Link>
           </div>
           <Link
-            href="/menu"
+            href="/"
             target="_blank"
             rel="noopener noreferrer"
             className="rounded-full bg-flame-gradient px-5 py-2.5 text-sm font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.03] focus-visible:scale-[1.03]"
@@ -42,4 +42,5 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     </div>
   );
 }
+
 
