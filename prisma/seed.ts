@@ -263,7 +263,7 @@ const categories: CategoryInput[] = [
         prices: [{ label: "Platter", priceRs: 1099 }],
       },
       {
-        name: "Extra Topping — Chicken",
+        name: "Extra Topping â€” Chicken",
         prices: [
           { label: "Small", priceRs: 100 },
           { label: "Medium", priceRs: 150 },
@@ -271,7 +271,7 @@ const categories: CategoryInput[] = [
         ],
       },
       {
-        name: "Extra Topping — Cheese",
+        name: "Extra Topping â€” Cheese",
         prices: [
           { label: "Small", priceRs: 100 },
           { label: "Medium", priceRs: 150 },
@@ -340,11 +340,11 @@ const categories: CategoryInput[] = [
 const deals = [
   {
     title: "The Oven Combo",
-    description: "A full meal for one — small pizza, hot wings, fries and a drink, bundled and discounted.",
+    description: "A full meal for one â€” small pizza, hot wings, fries and a drink, bundled and discounted.",
     priceRs: 999,
-    activeWindow: "10 AM – 5 PM",
+    activeWindow: "10 AM â€“ 5 PM",
     includedItems: [
-      "1 Small Pizza — Chicken Tikka or Special Fajita",
+      "1 Small Pizza â€” Chicken Tikka or Special Fajita",
       "5 pc Hot Wings",
       "1 Regular Fries",
       "1 Regular Bottled Drink",
@@ -353,33 +353,33 @@ const deals = [
   },
   {
     title: "Burger & Shake Combo",
-    description: "A Zinger Burger paired with fries and a cold shake — a student favourite.",
+    description: "A Zinger Burger paired with fries and a cold shake â€” a student favourite.",
     priceRs: 850,
-    activeWindow: "10 AM – 5 PM",
+    activeWindow: "10 AM â€“ 5 PM",
     includedItems: ["1 Zinger Burger", "1 Regular Fries", "1 Cold Coffee or Ice Cream Shake"],
     displayOrder: 2,
   },
   {
-    title: "Small Pizza — Tikka / Fajita",
+    title: "Small Pizza â€” Tikka / Fajita",
     description: "A student-sized small pizza in Chicken Tikka or Special Fajita flavour.",
     priceRs: 500,
-    activeWindow: "10 AM – 5 PM",
-    includedItems: ["1 Small Pizza — Chicken Tikka or Special Fajita"],
+    activeWindow: "10 AM â€“ 5 PM",
+    includedItems: ["1 Small Pizza â€” Chicken Tikka or Special Fajita"],
     displayOrder: 3,
   },
   {
-    title: "Medium Pizza — Tikka / Fajita",
+    title: "Medium Pizza â€” Tikka / Fajita",
     description: "A medium pizza in Chicken Tikka or Special Fajita flavour, made fresh to order.",
     priceRs: 800,
-    activeWindow: "10 AM – 5 PM",
-    includedItems: ["1 Medium Pizza — Chicken Tikka or Special Fajita"],
+    activeWindow: "10 AM â€“ 5 PM",
+    includedItems: ["1 Medium Pizza â€” Chicken Tikka or Special Fajita"],
     displayOrder: 4,
   },
   {
     title: "Pan Sandwich",
     description: "Grilled pan sandwich served with a side of fries.",
     priceRs: 550,
-    activeWindow: "10 AM – 5 PM",
+    activeWindow: "10 AM â€“ 5 PM",
     includedItems: ["1 Pan Sandwich", "1 Side of Fries"],
     displayOrder: 5,
   },
@@ -387,7 +387,7 @@ const deals = [
     title: "Zinger Burger + Reggy Burger",
     description: "One Zinger Burger and one Reggy Burger, paired together.",
     priceRs: 600,
-    activeWindow: "10 AM – 5 PM",
+    activeWindow: "10 AM â€“ 5 PM",
     includedItems: ["1 Zinger Burger", "1 Reggy Burger"],
     displayOrder: 6,
   },
@@ -395,13 +395,13 @@ const deals = [
     title: "2 Chicken Shawarma",
     description: "Two freshly rolled chicken shawarma, char-grilled and packed to go.",
     priceRs: 400,
-    activeWindow: "10 AM – 5 PM",
+    activeWindow: "10 AM â€“ 5 PM",
     includedItems: ["2 Chicken Shawarma"],
     displayOrder: 7,
   },
 ];
 
-// Default admin passwords — the same for every branch to start with. Each
+// Default admin passwords â€” the same for every branch to start with. Each
 // branch's admin should log in at /admin/login (using the adminUsername
 // below) and this should be changed for production use; there's no UI for
 // that yet, so for now re-run `npm run db:seed` after editing the password
@@ -411,9 +411,9 @@ const DEFAULT_ADMIN_PASSWORD = "TheOven@2026";
 const branchSeeds = [
   {
     slug: "mian-channu",
-    name: "The Oven Pizza — Mian Channu",
+    name: "The Oven Pizza â€” Mian Channu",
     address: "Shaheed Rd, near Municipal Gym, Mian Channu, 60000, Pakistan",
-    photoUrl: "/images/hero-food.png",
+    photoUrl: "/images/branch-mian-channu.png",
     phone: "0300-1520250",
     phone2: "+92 318 7739973",
     adminUsername: "mian-channu",
@@ -422,9 +422,9 @@ const branchSeeds = [
   },
   {
     slug: "sahiwal",
-    name: "The Oven Pizza — Sahiwal",
+    name: "The Oven Pizza â€” Sahiwal",
     address: "Sahiwal, Punjab, Pakistan",
-    photoUrl: "/images/menu-royalties-burgers.png",
+    photoUrl: "/images/branch-sahiwal.jpeg",
     phone: "0304-1112302",
     adminUsername: "sahiwal",
     passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD),
@@ -433,9 +433,9 @@ const branchSeeds = [
   
   {
     slug: "chichawatni",
-    name: "The Oven Pizza — Chichawatni",
+    name: "The Oven Pizza â€” Chichawatni",
     address: "Near Zahid Iqbal Chowk, Chichawatni, Pakistan",
-    photoUrl: "/images/menu-drinks-hero.png",
+    photoUrl: "/images/branch-chichawatni.png",
     phone: "0304-1114303",
     adminUsername: "chichawatni",
     passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD),
@@ -444,7 +444,7 @@ const branchSeeds = [
 ];
 
 async function main() {
-  console.log("Seeding database…");
+  console.log("Seeding databaseâ€¦");
 
   for (const branch of branchSeeds) {
     await prisma.branch.upsert({
@@ -516,3 +516,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+
