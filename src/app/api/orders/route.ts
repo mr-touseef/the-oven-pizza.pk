@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { orderSchema } from "@/lib/validations";
+import { orderSchema, adminOrderSchema } from "@/lib/validations";
 import { isRateLimited, getClientIp } from "@/lib/rate-limit";
 import { getAdminSession } from "@/lib/auth";
 import { sendNewOrderNotification } from "@/lib/services/pushNotificationService";
@@ -25,27 +25,83 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: "Invalid request body." }, { status: 400 });
   }
 
-  const parsed = orderSchema.safeParse(body);
-  if (!parsed.success) {
-    const fieldErrors: Record<string, string> = {};
-    for (const issue of parsed.error.issues) {
-      const key = String(issue.path[0] ?? "form");
-      if (!fieldErrors[key]) fieldErrors[key] = issue.message;
+  // Only a genuine, server-verified admin session can use the simplified
+  // admin checkout path. The client cannot request this by claiming a flag
+  // in the body — it is entirely gated on the actual session.
+  const session = await getAdminSession();
+  const wantsAdminCheckout =
+    Boolean(session) && typeof body === "object" && body !== null && (body as Record<string, unknown>).isAdminOrder === true;
+
+  let customerName: string;
+  let customerPhone: string | undefined;
+  let customerEmail: string | undefined;
+  let branchId: string | undefined;
+  let orderType: "DELIVERY" | "PICKUP";
+  let deliveryAddress: string | undefined;
+  let notes: string | undefined;
+  let discountPercentInput: number;
+  let lines: { kind: "menu" | "deal"; itemId: string; name: string; sizeLabel?: string; unitPrice: number; quantity: number }[];
+  let isAdminOrder = false;
+  let company: string | undefined;
+
+  if (wantsAdminCheckout && session) {
+    const parsed = adminOrderSchema.safeParse(body);
+    if (!parsed.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of parsed.error.issues) {
+        const key = String(issue.path[0] ?? "form");
+        if (!fieldErrors[key]) fieldErrors[key] = issue.message;
+      }
+      return NextResponse.json(
+        { message: "Please check the form for errors.", fieldErrors },
+        { status: 400 }
+      );
     }
-    return NextResponse.json(
-      { message: "Please check the form for errors.", fieldErrors },
-      { status: 400 }
-    );
+    const data = parsed.data;
+    customerName = `${session.branch.name} — Walk-in Order`;
+    customerPhone = undefined;
+    customerEmail = undefined;
+    branchId = session.branch.id;
+    orderType = data.orderType;
+    deliveryAddress = data.orderType === "DELIVERY" ? data.deliveryAddress : undefined;
+    notes = data.notes;
+    discountPercentInput = data.discountPercent;
+    lines = data.lines;
+    isAdminOrder = true;
+    company = undefined;
+  } else {
+    const parsed = orderSchema.safeParse(body);
+    if (!parsed.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of parsed.error.issues) {
+        const key = String(issue.path[0] ?? "form");
+        if (!fieldErrors[key]) fieldErrors[key] = issue.message;
+      }
+      return NextResponse.json(
+        { message: "Please check the form for errors.", fieldErrors },
+        { status: 400 }
+      );
+    }
+    const data = parsed.data;
+    customerName = data.customerName;
+    customerPhone = data.customerPhone;
+    customerEmail = data.customerEmail;
+    branchId = data.branchId;
+    orderType = data.orderType;
+    deliveryAddress = data.orderType === "DELIVERY" ? data.deliveryAddress : undefined;
+    notes = data.notes;
+    discountPercentInput = data.discountPercent;
+    lines = data.lines;
+    isAdminOrder = false;
+    company = data.company;
   }
 
-  const data = parsed.data;
-
-  if (data.company) {
+  if (company) {
     return NextResponse.json({ message: "Order received." }, { status: 200 });
   }
 
-  const menuItemIds = [...new Set(data.lines.filter((l) => l.kind === "menu").map((l) => l.itemId))];
-  const dealIds = [...new Set(data.lines.filter((l) => l.kind === "deal").map((l) => l.itemId))];
+  const menuItemIds = [...new Set(lines.filter((l) => l.kind === "menu").map((l) => l.itemId))];
+  const dealIds = [...new Set(lines.filter((l) => l.kind === "deal").map((l) => l.itemId))];
 
   try {
     const [menuItems, deals, branch] = await Promise.all([
@@ -53,10 +109,10 @@ export async function POST(request: Request) {
         ? prisma.menuItem.findMany({ where: { id: { in: menuItemIds } }, include: { prices: true } })
         : Promise.resolve([]),
       dealIds.length ? prisma.deal.findMany({ where: { id: { in: dealIds } } }) : Promise.resolve([]),
-      data.branchId ? prisma.branch.findFirst({ where: { id: data.branchId, isActive: true } }) : Promise.resolve(null),
+      branchId ? prisma.branch.findFirst({ where: { id: branchId, isActive: true } }) : Promise.resolve(null),
     ]);
 
-    if (data.branchId && !branch) {
+    if (branchId && !branch) {
       return NextResponse.json(
         { message: "Selected branch is not available. Please choose another." },
         { status: 400 }
@@ -78,7 +134,7 @@ export async function POST(request: Request) {
 
     const resolvedLines: ResolvedLine[] = [];
 
-    for (const line of data.lines) {
+    for (const line of lines) {
       if (line.kind === "menu") {
         const item = menuItemMap.get(line.itemId);
         if (!item || !item.isAvailable) {
@@ -130,7 +186,7 @@ export async function POST(request: Request) {
     }
 
     const appSettings = await prisma.appSettings.findUnique({ where: { id: "singleton" } });
-    const discountPercent = appSettings?.discountPercent ?? 0;
+    const discountPercent = isAdminOrder ? discountPercentInput : (appSettings?.discountPercent ?? 0);
 
     const subtotal = resolvedLines.reduce((sum, l) => sum + l.lineTotal, 0);
     const discountAmount = Math.round((subtotal * discountPercent) / 100);
@@ -139,13 +195,13 @@ export async function POST(request: Request) {
     const order = await prisma.order.create({
       data: {
         branchId: branch?.id,
-        customerName: data.customerName,
-        customerPhone: data.customerPhone,
-        customerEmail: data.customerEmail,
-        orderType: data.orderType,
-        deliveryAddress: data.orderType === "DELIVERY" ? data.deliveryAddress : undefined,
-        isAdminOrder: false,
-        notes: data.notes,
+        customerName,
+        customerPhone,
+        customerEmail,
+        orderType,
+        deliveryAddress,
+        isAdminOrder,
+        notes,
         subtotal,
         discountPercent,
         discountAmount,
@@ -155,14 +211,14 @@ export async function POST(request: Request) {
       select: { id: true, subtotal: true, discountAmount: true, total: true },
     });
 
-    if (branch?.id) {
-      sendNewOrderNotification(order.id, branch.id, data.customerName, total).catch((err) =>
+    if (branch?.id && !isAdminOrder) {
+      sendNewOrderNotification(order.id, branch.id, customerName, total).catch((err) =>
         console.error("New-order push notification failed:", err)
       );
     }
 
     return NextResponse.json(
-      { message: "Order received â€” we'll call you shortly to confirm.", order },
+      { message: "Order received - we'll call you shortly to confirm.", order },
       { status: 201 }
     );
   } catch (error) {

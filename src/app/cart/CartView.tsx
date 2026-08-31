@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
@@ -12,7 +12,15 @@ type OrderType = "DELIVERY" | "PICKUP";
 
 type CheckoutFieldErrors = Partial<Record<"customerName" | "customerPhone" | "customerEmail" | "branchId" | "notes" | "lines" | "orderType" | "deliveryAddress", string>>;
 
-export default function CartView({ branches, isAdmin }: { branches: Branch[]; isAdmin: boolean }) {
+export default function CartView({
+  branches,
+  isAdmin,
+  adminBranchName,
+}: {
+  branches: Branch[];
+  isAdmin: boolean;
+  adminBranchName?: string | null;
+}) {
   const { lines, subtotal, incrementLine, decrementLine, removeLine, clearCart } = useCart();
 
   const [discountInput, setDiscountInput] = useState("");
@@ -130,6 +138,52 @@ export default function CartView({ branches, isAdmin }: { branches: Branch[]; is
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(parsed.data),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (data?.fieldErrors) setCheckoutErrors(data.fieldErrors);
+        setCheckoutStatus("error");
+        setCheckoutMessage(data?.message || "Something went wrong. Please try again.");
+        return;
+      }
+
+      setOrderConfirmation({ id: data.order.id, total: data.order.total });
+      clearCart();
+      setCheckoutStatus("idle");
+    } catch {
+      setCheckoutStatus("error");
+      setCheckoutMessage("We couldn't reach the server. Check your connection and try again.");
+    }
+  }
+
+  async function handlePlaceAdminOrder(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setCheckoutMessage(null);
+    setCheckoutStatus("loading");
+    setCheckoutErrors({});
+
+    const payload = {
+      isAdminOrder: true,
+      orderType,
+      deliveryAddress,
+      notes,
+      discountPercent,
+      lines: lines.map((l) => ({
+        kind: l.kind,
+        itemId: l.itemId,
+        name: l.name,
+        sizeLabel: l.sizeLabel,
+        unitPrice: l.unitPrice,
+        quantity: l.quantity,
+      })),
+    };
+
+    try {
+      const res = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
 
@@ -281,132 +335,209 @@ export default function CartView({ branches, isAdmin }: { branches: Branch[]; is
           )}
         </div>
 
-        <div className="mt-8 ml-auto max-w-sm rounded-xl2 border border-oven-flame/25 bg-oven-teal-deep/50 p-6 shadow-card">
-          <h2 className="font-display text-xl text-oven-crust">Place Order</h2>
-          <p className="mt-1 text-sm text-oven-cream/60">We will call you to confirm before preparing your order.</p>
-
-          <form onSubmit={handlePlaceOrder} noValidate className="mt-5 space-y-4">
-            <div className="hidden" aria-hidden="true">
-              <label htmlFor="checkout-company">Company</label>
-              <input id="checkout-company" type="text" tabIndex={-1} autoComplete="off" value={company} onChange={(e) => setCompany(e.target.value)} />
-            </div>
-
-            <div>
-              <label className="mb-1.5 block text-sm font-medium text-oven-cream/85">Order type</label>
-              <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={() => setOrderType("DELIVERY")}
-                  className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors ${
-                    orderType === "DELIVERY"
-                      ? "border-oven-flame bg-oven-flame/15 text-oven-flame-light"
-                      : "border-oven-cream/15 text-oven-cream/70 hover:border-oven-cream/30"
-                  }`}
-                >
-                  Delivery
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setOrderType("PICKUP")}
-                  className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors ${
-                    orderType === "PICKUP"
-                      ? "border-oven-flame bg-oven-flame/15 text-oven-flame-light"
-                      : "border-oven-cream/15 text-oven-cream/70 hover:border-oven-cream/30"
-                  }`}
-                >
-                  Pickup
-                </button>
-              </div>
-              {checkoutErrors.orderType ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.orderType}</p> : null}
-            </div>
-
-            <p className="mt-2 text-xs text-oven-cream/50">
-              {orderType === "DELIVERY"
-                ? "Delivery usually takes 30–45 minutes, depending on your area and how busy the branch is."
-                : "Pickup orders are usually ready in 20–30 minutes."}
+        {isAdmin ? (
+          <div className="mt-8 ml-auto max-w-sm rounded-xl2 border border-oven-flame/25 bg-oven-teal-deep/50 p-6 shadow-card">
+            <h2 className="font-display text-xl text-oven-crust">Place Order</h2>
+            <p className="mt-1 text-sm text-oven-cream/60">
+              Placed by <span className="font-semibold text-oven-cream/85">{adminBranchName ?? "Branch Admin"}</span> - no customer details needed.
             </p>
 
-            {orderType === "DELIVERY" ? (
+            <form onSubmit={handlePlaceAdminOrder} className="mt-5 space-y-4">
               <div>
-                <label htmlFor="checkout-address" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
-                  Delivery address
-                </label>
-                <textarea
-                  id="checkout-address"
-                  rows={2}
-                  value={deliveryAddress}
-                  onChange={(e) => setDeliveryAddress(e.target.value)}
-                  aria-invalid={Boolean(checkoutErrors.deliveryAddress)}
-                  className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light"
-                  placeholder="House #, street, area, nearest landmark"
-                />
-                {checkoutErrors.deliveryAddress ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.deliveryAddress}</p> : null}
+                <label className="mb-1.5 block text-sm font-medium text-oven-cream/85">Order type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setOrderType("DELIVERY")}
+                    className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors ${
+                      orderType === "DELIVERY"
+                        ? "border-oven-flame bg-oven-flame/15 text-oven-flame-light"
+                        : "border-oven-cream/15 text-oven-cream/70 hover:border-oven-cream/30"
+                    }`}
+                  >
+                    Delivery
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrderType("PICKUP")}
+                    className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors ${
+                      orderType === "PICKUP"
+                        ? "border-oven-flame bg-oven-flame/15 text-oven-flame-light"
+                        : "border-oven-cream/15 text-oven-cream/70 hover:border-oven-cream/30"
+                    }`}
+                  >
+                    Pickup
+                  </button>
+                </div>
               </div>
-            ) : null}
 
-            <div>
-              <label htmlFor="checkout-name" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
-                Full name
-              </label>
-              <input id="checkout-name" type="text" autoComplete="name" value={customerName} onChange={(e) => setCustomerName(e.target.value)} aria-invalid={Boolean(checkoutErrors.customerName)} className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="Ali Raza" />
-              {checkoutErrors.customerName ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.customerName}</p> : null}
-            </div>
+              {orderType === "DELIVERY" ? (
+                <div>
+                  <label htmlFor="admin-address" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+                    Delivery address <span className="text-oven-cream/40">(optional)</span>
+                  </label>
+                  <textarea
+                    id="admin-address"
+                    rows={2}
+                    value={deliveryAddress}
+                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                    className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light"
+                    placeholder="House #, street, area, nearest landmark"
+                  />
+                </div>
+              ) : null}
 
-            <div>
-              <label htmlFor="checkout-phone" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
-                Phone number
-              </label>
-              <input id="checkout-phone" type="tel" autoComplete="tel" inputMode="numeric" maxLength={11} value={customerPhone} onChange={(e) => { const digits = e.target.value.replace(/\D/g, ''); if (digits.length <= 11) setCustomerPhone(digits); }} aria-invalid={Boolean(checkoutErrors.customerPhone)} className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="0300-1234567" />
-              {checkoutErrors.customerPhone ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.customerPhone}</p> : null}
-            </div>
-
-            <div>
-              <label htmlFor="checkout-email" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
-                Email <span className="text-oven-cream/40">(optional)</span>
-              </label>
-              <input id="checkout-email" type="email" autoComplete="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} aria-invalid={Boolean(checkoutErrors.customerEmail)} className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="you@example.com" />
-              {checkoutErrors.customerEmail ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.customerEmail}</p> : null}
-            </div>
-
-            {branches.length > 0 ? (
               <div>
-                <label htmlFor="checkout-branch" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
-                  Branch
+                <label htmlFor="admin-notes" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+                  Notes <span className="text-oven-cream/40">(optional)</span>
                 </label>
-                <select id="checkout-branch" value={branchId} onChange={(e) => setBranchId(e.target.value)} className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream focus:border-oven-flame-light">
-                  <option value="">No preference - call to confirm</option>
-                  {branches.map((b) => (
-                    <option key={b.id} value={b.id}>
-                      {b.name}
-                    </option>
-                  ))}
-                </select>
+                <textarea id="admin-notes" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="Gate code, extra spicy, no onions..." />
               </div>
-            ) : null}
 
-            <div>
-              <label htmlFor="checkout-notes" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
-                Notes <span className="text-oven-cream/40">(optional)</span>
-              </label>
-              <textarea id="checkout-notes" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="Gate code, extra spicy, no onions..." />
-            </div>
+              <button type="submit" disabled={checkoutStatus === "loading"} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-flame-gradient px-6 py-3 text-sm font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60">
+                {checkoutStatus === "loading" ? (
+                  <>
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-oven-charcoal/40 border-t-oven-charcoal" aria-hidden="true" />
+                    Placing order...
+                  </>
+                ) : (
+                  `Place Order - ${formatRs(total)}`
+                )}
+              </button>
 
-            <button type="submit" disabled={checkoutStatus === "loading"} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-flame-gradient px-6 py-3 text-sm font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60">
-              {checkoutStatus === "loading" ? (
-                <>
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-oven-charcoal/40 border-t-oven-charcoal" aria-hidden="true" />
-                  Placing order...
-                </>
-              ) : (
-                `Place Order - ${formatRs(total)}`
-              )}
-            </button>
+              <div role="status" aria-live="polite">
+                {checkoutMessage ? <p className={`text-sm ${checkoutStatus === "error" ? "text-red-400" : "text-oven-cream/70"}`}>{checkoutMessage}</p> : null}
+              </div>
+            </form>
+          </div>
+        ) : (
+          <div className="mt-8 ml-auto max-w-sm rounded-xl2 border border-oven-flame/25 bg-oven-teal-deep/50 p-6 shadow-card">
+            <h2 className="font-display text-xl text-oven-crust">Place Order</h2>
+            <p className="mt-1 text-sm text-oven-cream/60">We will call you to confirm before preparing your order.</p>
 
-            <div role="status" aria-live="polite">
-              {checkoutMessage ? <p className={`text-sm ${checkoutStatus === "error" ? "text-red-400" : "text-oven-cream/70"}`}>{checkoutMessage}</p> : null}
-            </div>
-          </form>
-        </div>
+            <form onSubmit={handlePlaceOrder} noValidate className="mt-5 space-y-4">
+              <div className="hidden" aria-hidden="true">
+                <label htmlFor="checkout-company">Company</label>
+                <input id="checkout-company" type="text" tabIndex={-1} autoComplete="off" value={company} onChange={(e) => setCompany(e.target.value)} />
+              </div>
+
+              <div>
+                <label className="mb-1.5 block text-sm font-medium text-oven-cream/85">Order type</label>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setOrderType("DELIVERY")}
+                    className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors ${
+                      orderType === "DELIVERY"
+                        ? "border-oven-flame bg-oven-flame/15 text-oven-flame-light"
+                        : "border-oven-cream/15 text-oven-cream/70 hover:border-oven-cream/30"
+                    }`}
+                  >
+                    Delivery
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrderType("PICKUP")}
+                    className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors ${
+                      orderType === "PICKUP"
+                        ? "border-oven-flame bg-oven-flame/15 text-oven-flame-light"
+                        : "border-oven-cream/15 text-oven-cream/70 hover:border-oven-cream/30"
+                    }`}
+                  >
+                    Pickup
+                  </button>
+                </div>
+                {checkoutErrors.orderType ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.orderType}</p> : null}
+              </div>
+
+              <p className="mt-2 text-xs text-oven-cream/50">
+                {orderType === "DELIVERY"
+                  ? "Delivery usually takes 30-45 minutes, depending on your area and how busy the branch is."
+                  : "Pickup orders are usually ready in 20-30 minutes."}
+              </p>
+
+              {orderType === "DELIVERY" ? (
+                <div>
+                  <label htmlFor="checkout-address" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+                    Delivery address
+                  </label>
+                  <textarea
+                    id="checkout-address"
+                    rows={2}
+                    value={deliveryAddress}
+                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                    aria-invalid={Boolean(checkoutErrors.deliveryAddress)}
+                    className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light"
+                    placeholder="House #, street, area, nearest landmark"
+                  />
+                  {checkoutErrors.deliveryAddress ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.deliveryAddress}</p> : null}
+                </div>
+              ) : null}
+
+              <div>
+                <label htmlFor="checkout-name" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+                  Full name
+                </label>
+                <input id="checkout-name" type="text" autoComplete="name" value={customerName} onChange={(e) => setCustomerName(e.target.value)} aria-invalid={Boolean(checkoutErrors.customerName)} className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="Ali Raza" />
+                {checkoutErrors.customerName ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.customerName}</p> : null}
+              </div>
+
+              <div>
+                <label htmlFor="checkout-phone" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+                  Phone number
+                </label>
+                <input id="checkout-phone" type="tel" autoComplete="tel" inputMode="numeric" maxLength={11} value={customerPhone} onChange={(e) => { const digits = e.target.value.replace(/\D/g, ''); if (digits.length <= 11) setCustomerPhone(digits); }} aria-invalid={Boolean(checkoutErrors.customerPhone)} className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="0300-1234567" />
+                {checkoutErrors.customerPhone ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.customerPhone}</p> : null}
+              </div>
+
+              <div>
+                <label htmlFor="checkout-email" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+                  Email <span className="text-oven-cream/40">(optional)</span>
+                </label>
+                <input id="checkout-email" type="email" autoComplete="email" value={customerEmail} onChange={(e) => setCustomerEmail(e.target.value)} aria-invalid={Boolean(checkoutErrors.customerEmail)} className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="you@example.com" />
+                {checkoutErrors.customerEmail ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.customerEmail}</p> : null}
+              </div>
+
+              {branches.length > 0 ? (
+                <div>
+                  <label htmlFor="checkout-branch" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+                    Branch
+                  </label>
+                  <select id="checkout-branch" value={branchId} onChange={(e) => setBranchId(e.target.value)} className="w-full rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream focus:border-oven-flame-light">
+                    <option value="">No preference - call to confirm</option>
+                    {branches.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : null}
+
+              <div>
+                <label htmlFor="checkout-notes" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
+                  Notes <span className="text-oven-cream/40">(optional)</span>
+                </label>
+                <textarea id="checkout-notes" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="Gate code, extra spicy, no onions..." />
+              </div>
+
+              <button type="submit" disabled={checkoutStatus === "loading"} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-flame-gradient px-6 py-3 text-sm font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60">
+                {checkoutStatus === "loading" ? (
+                  <>
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-oven-charcoal/40 border-t-oven-charcoal" aria-hidden="true" />
+                    Placing order...
+                  </>
+                ) : (
+                  `Place Order - ${formatRs(total)}`
+                )}
+              </button>
+
+              <div role="status" aria-live="polite">
+                {checkoutMessage ? <p className={`text-sm ${checkoutStatus === "error" ? "text-red-400" : "text-oven-cream/70"}`}>{checkoutMessage}</p> : null}
+              </div>
+            </form>
+          </div>
+        )}
       </div>
 
       <div className="receipt-print hidden">

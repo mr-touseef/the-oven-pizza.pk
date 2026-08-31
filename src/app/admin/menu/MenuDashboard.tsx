@@ -14,12 +14,199 @@ type Item = {
 };
 type Category = { id: string; name: string; items: Item[] };
 
+type Deal = {
+  id: string;
+  title: string;
+  description: string;
+  priceRs: number;
+  activeWindow: string | null;
+  includedItems: string[];
+  isActive: boolean;
+};
+
 type NewPriceRow = { label: string; priceRs: string };
 
-export default function MenuDashboard({ categories: initialCategories }: { categories: Category[] }) {
+export default function MenuDashboard({
+  categories: initialCategories,
+  deals: initialDeals,
+}: {
+  categories: Category[];
+  deals: Deal[];
+}) {
   const [categories, setCategories] = useState<Category[]>(initialCategories);
+  const [deals, setDeals] = useState<Deal[]>(initialDeals);
 
-  // Existing price edit values
+  // ── Deals state ──────────────────────────────────────────────
+  const [editingDealId, setEditingDealId] = useState<string | null>(null);
+  const [dealEditFields, setDealEditFields] = useState<{
+    title: string;
+    description: string;
+    priceRs: string;
+    activeWindow: string;
+    includedItems: string;
+  }>({ title: "", description: "", priceRs: "", activeWindow: "", includedItems: "" });
+  const [dealEditSaving, setDealEditSaving] = useState(false);
+  const [dealEditError, setDealEditError] = useState<string | null>(null);
+  const [dealTogglingId, setDealTogglingId] = useState<string | null>(null);
+  const [dealDeletingId, setDealDeletingId] = useState<string | null>(null);
+
+  const [showNewDealForm, setShowNewDealForm] = useState(false);
+  const [newDeal, setNewDeal] = useState<{
+    title: string;
+    description: string;
+    priceRs: string;
+    activeWindow: string;
+    includedItems: string;
+  }>({ title: "", description: "", priceRs: "", activeWindow: "", includedItems: "" });
+  const [newDealCreating, setNewDealCreating] = useState(false);
+  const [newDealError, setNewDealError] = useState<string | null>(null);
+
+  function startEditDeal(deal: Deal) {
+    setEditingDealId(deal.id);
+    setDealEditFields({
+      title: deal.title,
+      description: deal.description,
+      priceRs: String(deal.priceRs),
+      activeWindow: deal.activeWindow || "",
+      includedItems: deal.includedItems.join(", "),
+    });
+    setDealEditError(null);
+  }
+
+  function cancelEditDeal() {
+    setEditingDealId(null);
+    setDealEditError(null);
+  }
+
+  async function saveDealEdit(dealId: string) {
+    if (!dealEditFields.title.trim()) {
+      setDealEditError("Title is required");
+      return;
+    }
+    if (!dealEditFields.description.trim()) {
+      setDealEditError("Description is required");
+      return;
+    }
+    const priceNum = Number(dealEditFields.priceRs);
+    if (!Number.isFinite(priceNum) || priceNum < 0) {
+      setDealEditError("Enter a valid price");
+      return;
+    }
+    setDealEditSaving(true);
+    setDealEditError(null);
+    try {
+      const res = await fetch(`/api/admin/deals/${dealId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: dealEditFields.title,
+          description: dealEditFields.description,
+          priceRs: priceNum,
+          activeWindow: dealEditFields.activeWindow || null,
+          includedItems: dealEditFields.includedItems
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setDealEditError(data?.error || "Failed to save");
+        return;
+      }
+      setDeals((prev) => prev.map((d) => (d.id === dealId ? data.deal : d)));
+      setEditingDealId(null);
+    } catch {
+      setDealEditError("Could not reach the server. Try again.");
+    } finally {
+      setDealEditSaving(false);
+    }
+  }
+
+  async function toggleDealActive(deal: Deal) {
+    setDealTogglingId(deal.id);
+    try {
+      const res = await fetch(`/api/admin/deals/${deal.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isActive: !deal.isActive }),
+      });
+      if (!res.ok) throw new Error("Failed");
+      const data = await res.json();
+      setDeals((prev) => prev.map((d) => (d.id === deal.id ? data.deal : d)));
+    } catch {
+      alert("Could not update deal. Please try again.");
+    } finally {
+      setDealTogglingId(null);
+    }
+  }
+
+  async function handleDeleteDeal(deal: Deal) {
+    if (!confirm(`Delete "${deal.title}"? This cannot be undone.`)) return;
+    setDealDeletingId(deal.id);
+    try {
+      const res = await fetch(`/api/admin/deals/${deal.id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed");
+      setDeals((prev) => prev.filter((d) => d.id !== deal.id));
+    } catch {
+      alert("Could not delete deal. Please try again.");
+    } finally {
+      setDealDeletingId(null);
+    }
+  }
+
+  function openNewDealForm() {
+    setShowNewDealForm(true);
+    setNewDeal({ title: "", description: "", priceRs: "", activeWindow: "", includedItems: "" });
+    setNewDealError(null);
+  }
+
+  async function submitNewDeal() {
+    if (!newDeal.title.trim()) {
+      setNewDealError("Title is required");
+      return;
+    }
+    if (!newDeal.description.trim()) {
+      setNewDealError("Description is required");
+      return;
+    }
+    const priceNum = Number(newDeal.priceRs);
+    if (!Number.isFinite(priceNum) || priceNum < 0) {
+      setNewDealError("Enter a valid price");
+      return;
+    }
+    setNewDealCreating(true);
+    setNewDealError(null);
+    try {
+      const res = await fetch("/api/admin/deals", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newDeal.title,
+          description: newDeal.description,
+          priceRs: priceNum,
+          activeWindow: newDeal.activeWindow || null,
+          includedItems: newDeal.includedItems
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setNewDealError(data?.error || "Failed to create deal");
+        return;
+      }
+      setDeals((prev) => [...prev, data.deal]);
+      setShowNewDealForm(false);
+    } catch {
+      setNewDealError("Could not reach the server. Try again.");
+    } finally {
+      setNewDealCreating(false);
+    }
+  }
+
+  // ── Existing: save a price value ──────────────────────────────
   const [values, setValues] = useState<Record<string, string>>(() => {
     const initial: Record<string, string> = {};
     initialCategories.forEach((cat) =>
@@ -35,7 +222,6 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
   const [savedId, setSavedId] = useState<string | null>(null);
   const [errorId, setErrorId] = useState<string | null>(null);
 
-  // Item details edit state
   const [editingItemId, setEditingItemId] = useState<string | null>(null);
   const [editFields, setEditFields] = useState<{ name: string; description: string; badge: string; imageUrl: string }>({
     name: "",
@@ -46,7 +232,6 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
   const [editSaving, setEditSaving] = useState(false);
   const [editError, setEditError] = useState<string | null>(null);
 
-  // New item form state (per category)
   const [openNewItemCat, setOpenNewItemCat] = useState<string | null>(null);
   const [newItem, setNewItem] = useState<{ name: string; description: string; badge: string; imageUrl: string }>({
     name: "",
@@ -58,7 +243,6 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
   const [creating, setCreating] = useState(false);
   const [createError, setCreateError] = useState<string | null>(null);
 
-  // Add price row to existing item
   const [addingPriceItemId, setAddingPriceItemId] = useState<string | null>(null);
   const [newPriceLabel, setNewPriceLabel] = useState("");
   const [newPriceValue, setNewPriceValue] = useState("");
@@ -67,7 +251,6 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
-  // ── Existing: save a price value ──────────────────────────────
   async function handleSave(priceId: string) {
     const priceRs = Number(values[priceId]);
     if (!Number.isFinite(priceRs) || priceRs < 0) {
@@ -92,7 +275,6 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
     }
   }
 
-  // ── Toggle availability ───────────────────────────────────────
   async function handleToggleAvailability(item: Item) {
     setTogglingId(item.id);
     try {
@@ -116,7 +298,6 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
     }
   }
 
-  // ── Edit item details ─────────────────────────────────────────
   function startEdit(item: Item) {
     setEditingItemId(item.id);
     setEditFields({
@@ -170,7 +351,6 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
     }
   }
 
-  // ── Delete item ────────────────────────────────────────────────
   async function handleDeleteItem(item: Item) {
     if (!confirm(`Delete "${item.name}"? This cannot be undone.`)) return;
     setDeletingId(item.id);
@@ -190,7 +370,6 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
     }
   }
 
-  // ── Add new price row to an item ─────────────────────────────
   function startAddPrice(itemId: string) {
     setAddingPriceItemId(itemId);
     setNewPriceLabel("");
@@ -254,7 +433,6 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
     }
   }
 
-  // ── New item form ─────────────────────────────────────────────
   function openNewItemForm(catId: string) {
     setOpenNewItemCat(catId);
     setNewItem({ name: "", description: "", badge: "", imageUrl: "" });
@@ -333,10 +511,197 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
     <div className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="font-display text-2xl text-oven-crust">Menu Management</h1>
       <p className="mt-1 text-sm text-oven-cream/60">
-        Add, edit, or remove items and prices. Changes save instantly and appear on the live site right away.
+        Add, edit, or remove items, prices, and deals. Changes save instantly and appear on the live site right away.
       </p>
 
-      <div className="mt-8 space-y-8">
+      <div className="mt-8">
+        <section>
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-oven-cream">Deals</h2>
+            <button
+              onClick={() => (showNewDealForm ? setShowNewDealForm(false) : openNewDealForm())}
+              className="rounded-lg border border-oven-crust/40 px-3 py-1 text-xs font-semibold text-oven-crust hover:bg-oven-crust/10"
+            >
+              {showNewDealForm ? "Cancel" : "+ Add Deal"}
+            </button>
+          </div>
+
+          {showNewDealForm && (
+            <div className="mb-4 rounded-xl2 border border-oven-crust/30 bg-oven-teal-deep/40 p-4">
+              <p className="mb-3 text-sm font-semibold text-oven-cream">New deal</p>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  placeholder="Title (e.g. Student Deal)"
+                  value={newDeal.title}
+                  onChange={(e) => setNewDeal((p) => ({ ...p, title: e.target.value }))}
+                  className="w-full rounded-lg border border-oven-cream/20 bg-oven-charcoal px-3 py-2 text-sm text-oven-cream"
+                />
+                <input
+                  type="text"
+                  placeholder="Description"
+                  value={newDeal.description}
+                  onChange={(e) => setNewDeal((p) => ({ ...p, description: e.target.value }))}
+                  className="w-full rounded-lg border border-oven-cream/20 bg-oven-charcoal px-3 py-2 text-sm text-oven-cream"
+                />
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    placeholder="Price (Rs)"
+                    value={newDeal.priceRs}
+                    onChange={(e) => setNewDeal((p) => ({ ...p, priceRs: e.target.value }))}
+                    className="w-1/2 rounded-lg border border-oven-cream/20 bg-oven-charcoal px-3 py-2 text-sm text-oven-cream"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Active window (e.g. 10AM to 5PM)"
+                    value={newDeal.activeWindow}
+                    onChange={(e) => setNewDeal((p) => ({ ...p, activeWindow: e.target.value }))}
+                    className="w-1/2 rounded-lg border border-oven-cream/20 bg-oven-charcoal px-3 py-2 text-sm text-oven-cream"
+                  />
+                </div>
+                <input
+                  type="text"
+                  placeholder="What's included, comma separated (e.g. 1 Medium Pizza, 5pc Wings)"
+                  value={newDeal.includedItems}
+                  onChange={(e) => setNewDeal((p) => ({ ...p, includedItems: e.target.value }))}
+                  className="w-full rounded-lg border border-oven-cream/20 bg-oven-charcoal px-3 py-2 text-sm text-oven-cream"
+                />
+
+                {newDealError && <p className="text-xs text-red-400">{newDealError}</p>}
+
+                <button
+                  onClick={submitNewDeal}
+                  disabled={newDealCreating}
+                  className="mt-2 rounded-lg bg-oven-crust px-4 py-2 text-xs font-semibold text-oven-charcoal disabled:opacity-50"
+                >
+                  {newDealCreating ? "Creating..." : "Create Deal"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="space-y-3">
+            {deals.map((deal) => (
+              <div
+                key={deal.id}
+                className={`rounded-xl2 border p-4 ${
+                  deal.isActive ? "border-oven-cream/10 bg-oven-teal-deep/30" : "border-red-500/20 bg-red-950/10"
+                }`}
+              >
+                {editingDealId === deal.id ? (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      value={dealEditFields.title}
+                      onChange={(e) => setDealEditFields((p) => ({ ...p, title: e.target.value }))}
+                      className="w-full rounded-lg border border-oven-cream/20 bg-oven-charcoal px-3 py-2 text-sm text-oven-cream"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Description"
+                      value={dealEditFields.description}
+                      onChange={(e) => setDealEditFields((p) => ({ ...p, description: e.target.value }))}
+                      className="w-full rounded-lg border border-oven-cream/20 bg-oven-charcoal px-3 py-2 text-sm text-oven-cream"
+                    />
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        placeholder="Price (Rs)"
+                        value={dealEditFields.priceRs}
+                        onChange={(e) => setDealEditFields((p) => ({ ...p, priceRs: e.target.value }))}
+                        className="w-1/2 rounded-lg border border-oven-cream/20 bg-oven-charcoal px-2 py-2 text-sm text-oven-cream"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Active window"
+                        value={dealEditFields.activeWindow}
+                        onChange={(e) => setDealEditFields((p) => ({ ...p, activeWindow: e.target.value }))}
+                        className="w-1/2 rounded-lg border border-oven-cream/20 bg-oven-charcoal px-2 py-2 text-sm text-oven-cream"
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="What's included, comma separated"
+                      value={dealEditFields.includedItems}
+                      onChange={(e) => setDealEditFields((p) => ({ ...p, includedItems: e.target.value }))}
+                      className="w-full rounded-lg border border-oven-cream/20 bg-oven-charcoal px-3 py-2 text-sm text-oven-cream"
+                    />
+                    {dealEditError && <p className="text-xs text-red-400">{dealEditError}</p>}
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => saveDealEdit(deal.id)}
+                        disabled={dealEditSaving}
+                        className="rounded-lg bg-oven-crust px-3 py-1 text-xs font-semibold text-oven-charcoal disabled:opacity-50"
+                      >
+                        {dealEditSaving ? "Saving..." : "Save"}
+                      </button>
+                      <button
+                        onClick={cancelEditDeal}
+                        className="rounded-lg border border-oven-cream/20 px-3 py-1 text-xs text-oven-cream/70"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <p className="font-medium text-oven-cream">
+                          {deal.title}
+                          <span className="ml-2 font-mono text-sm text-oven-crust">Rs {deal.priceRs}</span>
+                          {!deal.isActive && (
+                            <span className="ml-2 rounded-full bg-red-500/20 px-2 py-0.5 text-[10px] font-semibold text-red-400">
+                              Inactive
+                            </span>
+                          )}
+                        </p>
+                        <p className="text-xs text-oven-cream/50">{deal.description}</p>
+                        {deal.activeWindow && (
+                          <p className="text-xs text-oven-cream/40">Available: {deal.activeWindow}</p>
+                        )}
+                        {deal.includedItems.length > 0 && (
+                          <p className="text-xs text-oven-cream/40">Includes: {deal.includedItems.join(", ")}</p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => toggleDealActive(deal)}
+                          disabled={dealTogglingId === deal.id}
+                          className={`rounded-lg px-3 py-1 text-xs font-semibold disabled:opacity-50 ${
+                            deal.isActive
+                              ? "border border-oven-cream/20 text-oven-cream/70 hover:bg-oven-cream/10"
+                              : "bg-emerald-600 text-white hover:bg-emerald-500"
+                          }`}
+                        >
+                          {dealTogglingId === deal.id ? "..." : deal.isActive ? "Mark Inactive" : "Mark Active"}
+                        </button>
+                        <button
+                          onClick={() => startEditDeal(deal)}
+                          className="rounded-lg border border-oven-cream/20 px-3 py-1 text-xs text-oven-cream/70 hover:bg-oven-cream/10"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDeleteDeal(deal)}
+                          disabled={dealDeletingId === deal.id}
+                          className="rounded-lg border border-red-500/30 px-3 py-1 text-xs text-red-400 hover:bg-red-500/10 disabled:opacity-50"
+                        >
+                          {dealDeletingId === deal.id ? "..." : "Delete"}
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            ))}
+            {deals.length === 0 && <p className="text-sm text-oven-cream/40">No deals yet.</p>}
+          </div>
+        </section>
+      </div>
+
+      <div className="mt-10 space-y-8">
         {categories.map((cat) => (
           <section key={cat.id}>
             <div className="mb-3 flex items-center justify-between">
@@ -426,7 +791,7 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
                     disabled={creating}
                     className="mt-2 rounded-lg bg-oven-crust px-4 py-2 text-xs font-semibold text-oven-charcoal disabled:opacity-50"
                   >
-                    {creating ? "Creating…" : "Create Item"}
+                    {creating ? "Creating..." : "Create Item"}
                   </button>
                 </div>
               </div>
@@ -478,7 +843,7 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
                           disabled={editSaving}
                           className="rounded-lg bg-oven-crust px-3 py-1 text-xs font-semibold text-oven-charcoal disabled:opacity-50"
                         >
-                          {editSaving ? "Saving…" : "Save"}
+                          {editSaving ? "Saving..." : "Save"}
                         </button>
                         <button
                           onClick={cancelEdit}
@@ -517,7 +882,7 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
                                 : "bg-emerald-600 text-white hover:bg-emerald-500"
                             }`}
                           >
-                            {togglingId === item.id ? "…" : item.isAvailable ? "Mark Unavailable" : "Mark Available"}
+                            {togglingId === item.id ? "..." : item.isAvailable ? "Mark Unavailable" : "Mark Available"}
                           </button>
                           <button
                             onClick={() => startEdit(item)}
@@ -530,7 +895,7 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
                             disabled={deletingId === item.id}
                             className="rounded-lg border border-red-500/30 px-3 py-1 text-xs text-red-400 hover:bg-red-500/10 disabled:opacity-50"
                           >
-                            {deletingId === item.id ? "…" : "Delete"}
+                            {deletingId === item.id ? "..." : "Delete"}
                           </button>
                         </div>
                       </div>
@@ -553,7 +918,7 @@ export default function MenuDashboard({ categories: initialCategories }: { categ
                               disabled={savingId === price.id}
                               className="rounded-lg bg-oven-crust px-3 py-1 text-xs font-semibold text-oven-charcoal disabled:opacity-50"
                             >
-                              {savingId === price.id ? "Saving…" : "Save"}
+                              {savingId === price.id ? "Saving..." : "Save"}
                             </button>
                             {savedId === price.id && <span className="text-xs text-green-400">Saved ✓</span>}
                             {errorId === price.id && <span className="text-xs text-red-400">Error</span>}

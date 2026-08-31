@@ -56,3 +56,15 @@ export const orderSchema = z
     }
   });
 export type OrderInput = z.infer<typeof orderSchema>;
+
+// -- Admin quick checkout (branch admin placing a walk-in/phone order) --------
+// Only reachable server-side after verifying a real admin session; the branch
+// and customer name are derived from that session, not client input.
+export const adminOrderSchema = z.object({
+  orderType: z.enum(orderTypeValues, { errorMap: () => ({ message: "Choose delivery or pickup." }) }).default("DELIVERY"),
+  deliveryAddress: z.string().trim().max(300).optional().or(z.literal("")).transform((v) => (v ? v : undefined)),
+  notes: z.string().trim().max(500).optional().or(z.literal("")).transform((v) => (v ? v : undefined)),
+  discountPercent: z.number().min(0).max(100).default(0),
+  lines: z.array(orderLineSchema).min(1, "Your cart is empty."),
+});
+export type AdminOrderInput = z.infer<typeof adminOrderSchema>;
