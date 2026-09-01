@@ -1,4 +1,4 @@
-﻿import type { Metadata, Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import { Fraunces, Manrope, JetBrains_Mono } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import BackgroundVideo from "@/components/BackgroundVideo";
@@ -31,7 +31,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://theovenpizza.com";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "The Oven Pizza â€” Wood-Fired Pizza, Burgers & Shawarma in Chichawatni",
+    default: "The Oven Pizza — Wood-Fired Pizza, Burgers & Shawarma in Chichawatni",
     template: "%s | The Oven Pizza",
   },
   description:
@@ -64,7 +64,7 @@ export const metadata: Metadata = {
     locale: "en_PK",
     url: siteUrl,
     siteName: "The Oven Pizza",
-    title: "The Oven Pizza â€” Wood-Fired Pizza, Burgers & Shawarma in Chichawatni",
+    title: "The Oven Pizza — Wood-Fired Pizza, Burgers & Shawarma in Chichawatni",
     description:
       "Stone-baked pizzas, flame-grilled burgers, shawarma, wings and hand-crafted drinks. Free home delivery in Chichawatni.",
     images: [
@@ -78,7 +78,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Oven Pizza â€” Chichawatni",
+    title: "The Oven Pizza — Chichawatni",
     description:
       "Stone-baked pizzas, flame-grilled burgers, shawarma, wings and hand-crafted drinks. Free home delivery.",
     images: ["/images/hero-food.webp"],
@@ -113,7 +113,7 @@ export default async function RootLayout({
             name: branch.name,
             image: `${siteUrl}${branch.photoUrl}`,
             servesCuisine: ["Pizza", "Fast Food", "Shawarma", "Burgers"],
-            priceRange: "Rs 100 â€“ Rs 2500",
+            priceRange: "Rs 100 – Rs 2500",
             telephone:
               branch.phone ||
               process.env.NEXT_PUBLIC_RESTAURANT_PHONE_PRIMARY ||

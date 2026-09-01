@@ -8,7 +8,7 @@ import { formatRs } from "@/lib/types";
 import { orderSchema } from "@/lib/validations";
 import { PushNotificationButton } from '@/components/PushNotificationButton';
 
-type OrderType = "DELIVERY" | "PICKUP";
+type OrderType = "DELIVERY" | "PICKUP" | "DINE_IN";
 
 type CheckoutFieldErrors = Partial<Record<"customerName" | "customerPhone" | "customerEmail" | "branchId" | "notes" | "lines" | "orderType" | "deliveryAddress", string>>;
 
@@ -345,7 +345,7 @@ export default function CartView({
             <form onSubmit={handlePlaceAdminOrder} className="mt-5 space-y-4">
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-oven-cream/85">Order type</label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <button
                     type="button"
                     onClick={() => setOrderType("DELIVERY")}
@@ -367,6 +367,17 @@ export default function CartView({
                     }`}
                   >
                     Pickup
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrderType("DINE_IN")}
+                    className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors ${
+                      orderType === "DINE_IN"
+                        ? "border-oven-flame bg-oven-flame/15 text-oven-flame-light"
+                        : "border-oven-cream/15 text-oven-cream/70 hover:border-oven-cream/30"
+                    }`}
+                  >
+                    Dine In
                   </button>
                 </div>
               </div>
@@ -391,7 +402,7 @@ export default function CartView({
                 <label htmlFor="admin-notes" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
                   Notes <span className="text-oven-cream/40">(optional)</span>
                 </label>
-                <textarea id="admin-notes" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="Gate code, extra spicy, no onions..." />
+                <textarea id="admin-notes" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder={orderType === "DINE_IN" ? "Table number, extra spicy, no onions..." : "Gate code, extra spicy, no onions..."} />
               </div>
 
               <button type="submit" disabled={checkoutStatus === "loading"} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-flame-gradient px-6 py-3 text-sm font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60">
@@ -423,7 +434,7 @@ export default function CartView({
 
               <div>
                 <label className="mb-1.5 block text-sm font-medium text-oven-cream/85">Order type</label>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <button
                     type="button"
                     onClick={() => setOrderType("DELIVERY")}
@@ -446,6 +457,17 @@ export default function CartView({
                   >
                     Pickup
                   </button>
+                  <button
+                    type="button"
+                    onClick={() => setOrderType("DINE_IN")}
+                    className={`rounded-lg border px-4 py-2.5 text-sm font-semibold transition-colors ${
+                      orderType === "DINE_IN"
+                        ? "border-oven-flame bg-oven-flame/15 text-oven-flame-light"
+                        : "border-oven-cream/15 text-oven-cream/70 hover:border-oven-cream/30"
+                    }`}
+                  >
+                    Dine In
+                  </button>
                 </div>
                 {checkoutErrors.orderType ? <p className="mt-1.5 text-sm text-red-400">{checkoutErrors.orderType}</p> : null}
               </div>
@@ -453,7 +475,9 @@ export default function CartView({
               <p className="mt-2 text-xs text-oven-cream/50">
                 {orderType === "DELIVERY"
                   ? "Delivery usually takes 30-45 minutes, depending on your area and how busy the branch is."
-                  : "Pickup orders are usually ready in 20-30 minutes."}
+                  : orderType === "PICKUP"
+                  ? "Pickup orders are usually ready in 20-30 minutes."
+                  : "Let us know your table number in the notes below and we will bring your order out shortly."}
               </p>
 
               {orderType === "DELIVERY" ? (
@@ -518,7 +542,7 @@ export default function CartView({
                 <label htmlFor="checkout-notes" className="mb-1.5 block text-sm font-medium text-oven-cream/85">
                   Notes <span className="text-oven-cream/40">(optional)</span>
                 </label>
-                <textarea id="checkout-notes" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder="Gate code, extra spicy, no onions..." />
+                <textarea id="checkout-notes" rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} className="w-full resize-y rounded-lg border border-oven-cream/15 bg-oven-charcoal/60 px-4 py-2.5 text-oven-cream placeholder:text-oven-cream/30 focus:border-oven-flame-light" placeholder={orderType === "DINE_IN" ? "Table number, extra spicy, no onions..." : "Gate code, extra spicy, no onions..."} />
               </div>
 
               <button type="submit" disabled={checkoutStatus === "loading"} className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-flame-gradient px-6 py-3 text-sm font-semibold text-oven-charcoal shadow-ember transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-60">

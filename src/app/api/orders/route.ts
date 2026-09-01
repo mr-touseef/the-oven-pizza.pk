@@ -36,7 +36,7 @@ export async function POST(request: Request) {
   let customerPhone: string | undefined;
   let customerEmail: string | undefined;
   let branchId: string | undefined;
-  let orderType: "DELIVERY" | "PICKUP";
+  let orderType: "DELIVERY" | "PICKUP" | "DINE_IN";
   let deliveryAddress: string | undefined;
   let notes: string | undefined;
   let discountPercentInput: number;
@@ -237,3 +237,4 @@ export async function POST(request: Request) {
 export async function GET() {
   return NextResponse.json({ message: "Method not allowed." }, { status: 405 });
 }
+

@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 const phoneRegex = /^(\+92|0)[0-9\- ]{9,13}$/;
 
@@ -20,7 +20,7 @@ export const newsletterSchema = z.object({
 });
 export type NewsletterInput = z.infer<typeof newsletterSchema>;
 
-// ── Checkout / order ─────────────────────────────────────────────
+// â”€â”€ Checkout / order â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 export const orderLineSchema = z.object({
   kind: z.enum(["menu", "deal"]),
@@ -31,7 +31,7 @@ export const orderLineSchema = z.object({
   quantity: z.number().int().min(1).max(50),
 });
 
-export const orderTypeValues = ["DELIVERY", "PICKUP"] as const;
+export const orderTypeValues = ["DELIVERY", "PICKUP", "DINE_IN"] as const;
 
 export const orderSchema = z
   .object({
@@ -39,7 +39,7 @@ export const orderSchema = z
     customerPhone: z.string().trim().regex(phoneRegex, "Enter a valid Pakistani phone number, e.g. 0300-1234567."),
     customerEmail: z.union([z.string().trim().email("Enter a valid email address."), z.literal("")]).optional().transform((v) => (v ? v : undefined)),
     branchId: z.string().min(1, "Choose a branch."),
-    orderType: z.enum(orderTypeValues, { errorMap: () => ({ message: "Choose delivery or pickup." }) }).default("DELIVERY"),
+    orderType: z.enum(orderTypeValues, { errorMap: () => ({ message: "Choose delivery, pickup, or dine-in." }) }).default("DELIVERY"),
     deliveryAddress: z.string().trim().max(300).optional().or(z.literal("")).transform((v) => (v ? v : undefined)),
     notes: z.string().trim().max(500).optional().or(z.literal("")).transform((v) => (v ? v : undefined)),
     discountPercent: z.number().min(0).max(100).default(0),
@@ -61,10 +61,11 @@ export type OrderInput = z.infer<typeof orderSchema>;
 // Only reachable server-side after verifying a real admin session; the branch
 // and customer name are derived from that session, not client input.
 export const adminOrderSchema = z.object({
-  orderType: z.enum(orderTypeValues, { errorMap: () => ({ message: "Choose delivery or pickup." }) }).default("DELIVERY"),
+  orderType: z.enum(orderTypeValues, { errorMap: () => ({ message: "Choose delivery, pickup, or dine-in." }) }).default("DELIVERY"),
   deliveryAddress: z.string().trim().max(300).optional().or(z.literal("")).transform((v) => (v ? v : undefined)),
   notes: z.string().trim().max(500).optional().or(z.literal("")).transform((v) => (v ? v : undefined)),
   discountPercent: z.number().min(0).max(100).default(0),
   lines: z.array(orderLineSchema).min(1, "Your cart is empty."),
 });
 export type AdminOrderInput = z.infer<typeof adminOrderSchema>;
+
