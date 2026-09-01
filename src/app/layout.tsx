@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+﻿import type { Metadata, Viewport } from "next";
 import { Fraunces, Manrope, JetBrains_Mono } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import BackgroundVideo from "@/components/BackgroundVideo";
@@ -31,7 +31,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://theovenpizza.com";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "The Oven Pizza — Wood-Fired Pizza, Burgers & Shawarma in Chichawatni",
+    default: "The Oven Pizza â€” Wood-Fired Pizza, Burgers & Shawarma in Chichawatni",
     template: "%s | The Oven Pizza",
   },
   description:
@@ -49,8 +49,13 @@ export const metadata: Metadata = {
   applicationName: "The Oven Pizza",
   formatDetection: { telephone: true },
   icons: {
-    icon: "/icons/favicon.svg",
-    shortcut: "/icons/favicon.svg",
+    icon: [
+      { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/icons/favicon-32.png",
     apple: "/icons/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",
@@ -59,12 +64,12 @@ export const metadata: Metadata = {
     locale: "en_PK",
     url: siteUrl,
     siteName: "The Oven Pizza",
-    title: "The Oven Pizza — Wood-Fired Pizza, Burgers & Shawarma in Chichawatni",
+    title: "The Oven Pizza â€” Wood-Fired Pizza, Burgers & Shawarma in Chichawatni",
     description:
       "Stone-baked pizzas, flame-grilled burgers, shawarma, wings and hand-crafted drinks. Free home delivery in Chichawatni.",
     images: [
       {
-        url: "/images/hero-food.png",
+        url: "/images/hero-food.webp",
         width: 1200,
         height: 1500,
         alt: "A wood-fired pizza, fries and fried chicken from The Oven Pizza",
@@ -73,10 +78,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "The Oven Pizza — Chichawatni",
+    title: "The Oven Pizza â€” Chichawatni",
     description:
       "Stone-baked pizzas, flame-grilled burgers, shawarma, wings and hand-crafted drinks. Free home delivery.",
-    images: ["/images/hero-food.png"],
+    images: ["/images/hero-food.webp"],
   },
   robots: {
     index: true,
@@ -108,7 +113,7 @@ export default async function RootLayout({
             name: branch.name,
             image: `${siteUrl}${branch.photoUrl}`,
             servesCuisine: ["Pizza", "Fast Food", "Shawarma", "Burgers"],
-            priceRange: "Rs 100 – Rs 2500",
+            priceRange: "Rs 100 â€“ Rs 2500",
             telephone:
               branch.phone ||
               process.env.NEXT_PUBLIC_RESTAURANT_PHONE_PRIMARY ||
@@ -155,3 +160,4 @@ export default async function RootLayout({
     </html>
   );
 }
+
