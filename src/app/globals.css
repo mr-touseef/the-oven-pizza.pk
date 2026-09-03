@@ -142,3 +142,8 @@ html.theme-old .bg-white\/70 {
 html.theme-old .bg-white {
   background-color: rgb(36 28 24) !important;
 }
+
+body {
+  padding-bottom: 64px;
+}
+

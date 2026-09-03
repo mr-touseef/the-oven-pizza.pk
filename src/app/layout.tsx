@@ -6,6 +6,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getBranches } from "@/lib/branches";
 import "./globals.css";
+import BottomNav from "@/components/BottomNav";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -155,6 +156,7 @@ export default async function RootLayout({
           <Navbar />
           <main id="main-content">{children}</main>
           <Footer />
+          <BottomNav />
         </CartProvider>
       </body>
     </html>
