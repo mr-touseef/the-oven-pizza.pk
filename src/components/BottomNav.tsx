@@ -1,15 +1,20 @@
-'use client';
+﻿'use client';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Home, Search, ShoppingCart, MapPin } from 'lucide-react';
 
 export default function BottomNav() {
   const cartCount = 0;
+  const pathname = usePathname();
+
+  const activeClass = 'text-oven-flame';
+  const inactiveClass = 'text-oven-cream/70';
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden flex items-center justify-around border-t border-oven-flame/20 bg-oven-charcoal py-2.5 shadow-[0_-2px_8px_rgba(0,0,0,0.3)]">
       <Link
         href="/"
-        className="flex flex-col items-center gap-0.5 text-[11px] text-oven-flame"
+        className={`flex flex-col items-center gap-0.5 text-[11px] ${pathname === '/' ? activeClass : inactiveClass}`}
       >
         <Home size={20} />
         Home
@@ -17,7 +22,7 @@ export default function BottomNav() {
 
       <button
         onClick={() => { document.getElementById('menu-search')?.scrollIntoView({ behavior: 'smooth', block: 'center' }); document.getElementById('menu-search')?.focus(); }}
-        className="flex flex-col items-center gap-0.5 text-[11px] text-oven-cream/70"
+        className={`flex flex-col items-center gap-0.5 text-[11px] ${inactiveClass}`}
       >
         <Search size={20} />
         Search
@@ -25,7 +30,7 @@ export default function BottomNav() {
 
       <Link
         href="/cart"
-        className="relative flex flex-col items-center gap-0.5 text-[11px] text-oven-cream/70"
+        className={`relative flex flex-col items-center gap-0.5 text-[11px] ${pathname === '/cart' ? activeClass : inactiveClass}`}
       >
         <ShoppingCart size={20} />
         Cart
@@ -37,8 +42,8 @@ export default function BottomNav() {
       </Link>
 
       <Link
-        href="/#branches"
-        className="flex flex-col items-center gap-0.5 text-[11px] text-oven-cream/70"
+        href="/branches"
+        className={`flex flex-col items-center gap-0.5 text-[11px] ${pathname === '/branches' ? activeClass : inactiveClass}`}
       >
         <MapPin size={20} />
         Branches
