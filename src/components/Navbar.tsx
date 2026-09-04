@@ -1,11 +1,11 @@
-﻿"use client";
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import CartIcon from "./CartIcon";
 import ThemeToggle from "./ThemeToggle";
 const LINKS = [
-  { href: "/#branches", label: "Branches" },
+  { href: "/branches", label: "Branches" },
   { href: "/#contact", label: "Contact" },
 ];
 export default function Navbar() {
