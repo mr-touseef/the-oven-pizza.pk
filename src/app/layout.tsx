@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import { getBranches } from "@/lib/branches";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -157,6 +158,7 @@ export default async function RootLayout({
           <main id="main-content">{children}</main>
           <Footer />
           <BottomNav />
+          <GoogleAnalytics />
         </CartProvider>
       </body>
     </html>
