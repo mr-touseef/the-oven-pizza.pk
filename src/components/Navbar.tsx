@@ -6,7 +6,7 @@ import CartIcon from "./CartIcon";
 import ThemeToggle from "./ThemeToggle";
 const LINKS = [
   { href: "/branches", label: "Branches" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/contact", label: "Contact" },
 ];
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
