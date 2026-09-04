@@ -8,6 +8,7 @@ import { getBranches } from "@/lib/branches";
 import "./globals.css";
 import BottomNav from "@/components/BottomNav";
 import GoogleAnalytics from "@/components/GoogleAnalytics";
+import CookieBanner from "@/components/CookieBanner";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -159,6 +160,7 @@ export default async function RootLayout({
           <Footer />
           <BottomNav />
           <GoogleAnalytics />
+          <CookieBanner />
         </CartProvider>
       </body>
     </html>
