@@ -1,16 +1,14 @@
-"use client";
-
+﻿"use client";
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import type { MenuCategoryWithItems } from "@/lib/types";
 import MenuItemRow from "./MenuItemRow";
 
 export default function MenuSearch({ categories }: { categories: MenuCategoryWithItems[] }) {
   const [query, setQuery] = useState("");
-
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
-
     const matches: { item: MenuCategoryWithItems["items"][number]; categoryName: string }[] = [];
     for (const category of categories) {
       for (const item of category.items) {
@@ -26,11 +24,11 @@ export default function MenuSearch({ categories }: { categories: MenuCategoryWit
 
   return (
     <div className="container-page py-8">
-      <div className="mx-auto max-w-xl">
-        <label htmlFor="menu-search" className="sr-only">
-          Search the menu
-        </label>
-        <div className="relative">
+      <div className="mx-auto flex max-w-xl flex-col items-center gap-3 sm:flex-row">
+        <div className="relative w-full flex-1">
+          <label htmlFor="menu-search" className="sr-only">
+            Search the menu
+          </label>
           <svg
             className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-oven-crust/40"
             viewBox="0 0 24 24"
@@ -49,8 +47,13 @@ export default function MenuSearch({ categories }: { categories: MenuCategoryWit
             className="w-full rounded-full border border-oven-teal/20 bg-white py-3 pl-11 pr-4 text-oven-crust shadow-sm placeholder:text-oven-crust/40 focus:border-oven-flame-light focus:outline-none"
           />
         </div>
+        <Link
+          href="/menu"
+          className="shrink-0 whitespace-nowrap rounded-full bg-green-600 px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-green-700"
+        >
+          Browse Menu
+        </Link>
       </div>
-
       {query.trim() ? (
         <div className="mt-8">
           <p className="mb-4 text-center text-sm text-oven-crust/60">

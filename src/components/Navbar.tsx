@@ -1,11 +1,13 @@
-"use client";
+﻿"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import CartIcon from "./CartIcon";
 import ThemeToggle from "./ThemeToggle";
 const LINKS = [
+  { href: "/menu", label: "Menu" },
   { href: "/branches", label: "Branches" },
+  { href: "/deals", label: "Deals" },
   { href: "/contact", label: "Contact" },
 ];
 export default function Navbar() {
@@ -27,7 +29,7 @@ export default function Navbar() {
         className="container-page flex h-16 items-center justify-between gap-3 sm:h-20"
       >
         <Link
-          href="/#top"
+          href="/"
           className="flex shrink-0 items-center gap-2 font-display text-xl font-semibold tracking-tight text-oven-cream sm:text-2xl"
         >
           <Image src="/images/logo.png" alt="The Oven Pizza logo" width={40} height={40} className="h-9 w-9 object-contain sm:h-10 sm:w-10" priority />
@@ -39,9 +41,9 @@ export default function Navbar() {
           <ul className="flex items-center gap-5 whitespace-nowrap rounded-full bg-black/80 px-5 py-2.5 backdrop-blur-md lg:justify-center lg:gap-7">
             {LINKS.map((link) => (
               <li key={link.href}>
-                <a href={link.href} className="text-sm font-medium text-white/90 transition-colors hover:text-oven-flame-light">
+                <Link href={link.href} className="text-sm font-medium text-white/90 transition-colors hover:text-oven-flame-light">
                   {link.label}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>

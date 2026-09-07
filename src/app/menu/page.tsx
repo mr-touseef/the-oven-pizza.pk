@@ -1,23 +1,13 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import type { MenuCategoryWithItems, Deal } from "@/lib/types";
 import MenuSearch from "@/components/MenuSearch";
 import MenuCategoryTabs from "@/components/MenuCategoryTabs";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://theovenpizza.store";
-
 export const metadata: Metadata = {
-  title: "Menu",
+  title: "Menu – Pizzas, Burgers, Shawarma, Drinks & Deals | The Oven Pizza",
   description:
-    "Browse the full menu at The Oven Pizza: stone-baked pizzas, burgers, shawarma, wings, coffee, drinks, and deals, across all branches.",
-  alternates: {
-    canonical: `${siteUrl}/menu`,
-  },
-  openGraph: {
-    title: "Menu | The Oven Pizza",
-    description: "Stone-baked pizzas, burgers, shawarma, wings, coffee, drinks and deals.",
-    url: `${siteUrl}/menu`,
-  },
+    "Browse the full menu at The Oven Pizza: stone-baked pizzas, burgers, shawarma, wings, coffee, drinks, and the Happy Student Deals, across all branches.",
 };
 
 export const revalidate = 300;
@@ -56,6 +46,7 @@ export default async function MenuPage() {
   return (
     <>
       <MenuSearch categories={categories} />
+
       {dbUnavailable ? (
         <div className="container-page py-16">
           <div
@@ -64,12 +55,12 @@ export default async function MenuPage() {
           >
             <p className="font-display text-xl text-oven-flame-light">Menu is warming up</p>
             <p className="mt-2 text-oven-cream/80">
-              We could not reach the menu database just now. Please call us directly, or try
-              again shortly.
+              We could not reach the menu database just now. Please call us directly – see the Contact page.
             </p>
           </div>
         </div>
       ) : null}
+
       <MenuCategoryTabs categories={categories} deals={deals} />
     </>
   );

@@ -1,7 +1,7 @@
-import type { MetadataRoute } from "next";
+﻿import type { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://theovenpizza.com";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.theovenpizza.store";
 
   return [
     {
@@ -11,43 +11,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${siteUrl}/#pizzas`,
+      url: `${siteUrl}/menu`,
       lastModified: new Date(),
       changeFrequency: "weekly",
-      priority: 0.8,
+      priority: 0.9,
     },
     {
-      url: `${siteUrl}/#burgers`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/#shawarma`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/#drinks`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/#deals`,
+      url: `${siteUrl}/deals`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.9,
     },
     {
-      url: `${siteUrl}/#branches`,
+      url: `${siteUrl}/branches`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
-      url: `${siteUrl}/#contact`,
+      url: `${siteUrl}/contact`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.6,
