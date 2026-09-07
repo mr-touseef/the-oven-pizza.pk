@@ -143,13 +143,9 @@ html.theme-old .bg-white {
   background-color: rgb(36 28 24) !important;
 }
 
-<<<<<<< HEAD
 .overflow-x-auto::-webkit-scrollbar {
   display: none;
 }
-=======
 body {
   padding-bottom: 64px;
 }
-
->>>>>>> dd65e80fc1bb30c1d8ff9d821a553158a2ab8249
