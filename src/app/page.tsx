@@ -100,7 +100,7 @@ export default async function HomePage() {
         </div>
       ) : null}
 
-      <MenuCategoryTabs categories={categories} deals={deals} />
+      <MenuCategoryTabs categories={categories} deals={deals} hideHeader />
 
       
       <BranchesSection />

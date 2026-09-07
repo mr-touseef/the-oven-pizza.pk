@@ -9,6 +9,7 @@ type TabType = "all" | "pizza" | "burgers" | "shawarma" | "drinks" | "deals";
 interface MenuCategoryTabsProps {
   categories: MenuCategoryWithItems[];
   deals: Deal[];
+  hideHeader?: boolean;
 }
 const TAB_CONFIG: Record<TabType, { label: string; slugs: string[] }> = {
   all: {
@@ -45,7 +46,7 @@ const TAB_CONFIG: Record<TabType, { label: string; slugs: string[] }> = {
     slugs: [],
   },
 };
-export default function MenuCategoryTabs({ categories, deals }: MenuCategoryTabsProps) {
+export default function MenuCategoryTabs({ categories, deals, hideHeader = false }: MenuCategoryTabsProps) {
   const [activeTab, setActiveTab] = useState<TabType>("all");
   // Get random 2 items from array
   const getRandomItems = (items: any[], count: number = 2) => {
@@ -70,6 +71,32 @@ export default function MenuCategoryTabs({ categories, deals }: MenuCategoryTabs
   const visibleCategories = getVisibleCategories();
   return (
     <section className="scroll-mt-24 bg-white py-16 sm:py-24">
+      {!hideHeader && (
+        <div className="bg-oven-teal-dark">
+          <div className="container-page">
+            <div className="py-6">
+              <h2 className="mb-4 font-display text-2xl text-oven-cream sm:text-3xl">
+                Browse our menu
+              </h2>
+              <div className="flex flex-wrap gap-2">
+                {(Object.keys(TAB_CONFIG) as TabType[]).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`rounded-lg px-4 py-2 font-display text-sm font-medium transition-all sm:text-base ${
+                      activeTab === tab
+                        ? "bg-oven-teal-darker text-oven-cream"
+                        : "bg-transparent text-oven-cream/70 hover:text-oven-cream"
+                    }`}
+                  >
+                    {TAB_CONFIG[tab].label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Menu categories grid */}
       <div className="container-page py-16">
         {activeTab === "deals" ? (
