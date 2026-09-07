@@ -6,6 +6,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getBranches } from "@/lib/branches";
 import "./globals.css";
+import BottomNav from "@/components/BottomNav";
+import GoogleAnalytics from "@/components/GoogleAnalytics";
+import CookieBanner from "@/components/CookieBanner";
 
 const fraunces = Fraunces({
   subsets: ["latin"],
@@ -49,8 +52,13 @@ export const metadata: Metadata = {
   applicationName: "The Oven Pizza",
   formatDetection: { telephone: true },
   icons: {
-    icon: "/icons/favicon.svg",
-    shortcut: "/icons/favicon.svg",
+    icon: [
+      { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    shortcut: "/icons/favicon-32.png",
     apple: "/icons/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",
@@ -64,7 +72,7 @@ export const metadata: Metadata = {
       "Stone-baked pizzas, flame-grilled burgers, shawarma, wings and hand-crafted drinks. Free home delivery in Chichawatni.",
     images: [
       {
-        url: "/images/hero-food.png",
+        url: "/images/hero-food.webp",
         width: 1200,
         height: 1500,
         alt: "A wood-fired pizza, fries and fried chicken from The Oven Pizza",
@@ -76,7 +84,7 @@ export const metadata: Metadata = {
     title: "The Oven Pizza — Chichawatni",
     description:
       "Stone-baked pizzas, flame-grilled burgers, shawarma, wings and hand-crafted drinks. Free home delivery.",
-    images: ["/images/hero-food.png"],
+    images: ["/images/hero-food.webp"],
   },
   robots: {
     index: true,
@@ -150,8 +158,12 @@ export default async function RootLayout({
           <Navbar />
           <main id="main-content">{children}</main>
           <Footer />
+          <BottomNav />
+          <GoogleAnalytics />
+          <CookieBanner />
         </CartProvider>
       </body>
     </html>
   );
 }
+

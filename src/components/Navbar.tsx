@@ -1,11 +1,12 @@
-﻿"use client";
+"use client";
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import CartIcon from "./CartIcon";
 import ThemeToggle from "./ThemeToggle";
 const LINKS = [
-  { href: "/#branches", label: "Branches" },
-  { href: "/#contact", label: "Contact" },
+  { href: "/branches", label: "Branches" },
+  { href: "/contact", label: "Contact" },
 ];
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -29,12 +30,7 @@ export default function Navbar() {
           href="/#top"
           className="flex shrink-0 items-center gap-2 font-display text-xl font-semibold tracking-tight text-oven-cream sm:text-2xl"
         >
-          <span
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-flame-gradient text-base font-bold text-oven-charcoal sm:h-10 sm:w-10"
-            aria-hidden="true"
-          >
-            O
-          </span>
+          <Image src="/images/logo.png" alt="The Oven Pizza logo" width={40} height={40} className="h-9 w-9 object-contain sm:h-10 sm:w-10" priority />
           <span className="hidden sm:inline">
             The Oven <span className="text-oven-flame-light">Pizza</span>
           </span>

@@ -413,7 +413,7 @@ const branchSeeds = [
     slug: "mian-channu",
     name: "The Oven Pizza — Mian Channu",
     address: "Shaheed Rd, near Municipal Gym, Mian Channu, 60000, Pakistan",
-    photoUrl: "/images/hero-food.png",
+    photoUrl: "/images/branch-mian-channu.webp",
     phone: "0300-1520250",
     phone2: "+92 318 7739973",
     adminUsername: "mian-channu",
@@ -424,7 +424,7 @@ const branchSeeds = [
     slug: "sahiwal",
     name: "The Oven Pizza — Sahiwal",
     address: "Sahiwal, Punjab, Pakistan",
-    photoUrl: "/images/menu-royalties-burgers.png",
+    photoUrl: "/images/branch-sahiwal.webp",
     phone: "0304-1112302",
     adminUsername: "sahiwal",
     passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD),
@@ -435,7 +435,7 @@ const branchSeeds = [
     slug: "chichawatni",
     name: "The Oven Pizza — Chichawatni",
     address: "Near Zahid Iqbal Chowk, Chichawatni, Pakistan",
-    photoUrl: "/images/menu-drinks-hero.png",
+    photoUrl: "/images/branch-chichawatni.webp",
     phone: "0304-1114303",
     adminUsername: "chichawatni",
     passwordHash: hashPassword(DEFAULT_ADMIN_PASSWORD),
@@ -516,3 +516,4 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
+

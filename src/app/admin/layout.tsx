@@ -1,9 +1,9 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getAdminSession } from "@/lib/auth";
 
 export const metadata: Metadata = {
-  title: "Branch Admin â€” The Oven Pizza",
+  title: "Branch Admin — The Oven Pizza",
   robots: { index: false, follow: false },
 };
 
