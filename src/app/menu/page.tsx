@@ -5,9 +5,9 @@ import MenuSearch from "@/components/MenuSearch";
 import MenuCategoryTabs from "@/components/MenuCategoryTabs";
 
 export const metadata: Metadata = {
-  title: "Menu – Pizzas, Burgers, Shawarma, Drinks & Deals | The Oven Pizza",
+  title: "Menu – Pizza, Burgers, Shawarma & Deals in Mian Channu, Sahiwal, Chichawatni | The Oven Pizza",
   description:
-    "Browse the full menu at The Oven Pizza: stone-baked pizzas, burgers, shawarma, wings, coffee, drinks, and the Happy Student Deals, across all branches.",
+    "Full menu with prices for The Oven Pizza — Mian Channu, Sahiwal, and Chichawatni branches. Pizzas, burgers, shawarma, wings, coffee, drinks, and Happy Student Deals.",
 };
 
 export const revalidate = 300;
@@ -65,3 +65,4 @@ export default async function MenuPage() {
     </>
   );
 }
+
