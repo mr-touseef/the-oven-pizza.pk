@@ -4,6 +4,7 @@ import type { MenuCategoryWithItems, Deal } from "@/lib/types";
 import Hero from "@/components/Hero";
 import MenuSearch from "@/components/MenuSearch";
 import MenuCategoryTabs from "@/components/MenuCategoryTabs";
+import FeaturedCarousel from "@/components/FeaturedCarousel";
 import BranchesSection from "@/components/BranchesSection";
 import ContactSection from "@/components/ContactSection";
 
@@ -46,9 +47,31 @@ async function getMenuData(): Promise<{
 export default async function HomePage() {
   const { categories, deals, dbUnavailable } = await getMenuData();
 
+  const featuredItems = (() => {
+    const picked: typeof categories[number]["items"] = [];
+    let round = 0;
+    while (picked.length < 8 && round < 5) {
+      for (const cat of categories) {
+        const item = cat.items[round];
+        if (item && item.imageUrl && !picked.includes(item)) {
+          picked.push(item);
+        }
+        if (picked.length >= 8) break;
+      }
+      round++;
+    }
+    return picked.map((item) => ({
+      id: item.id,
+      name: item.name,
+      price: item.prices[0]?.priceRs ?? 0,
+      images: [item.imageUrl!, item.imageUrl!, item.imageUrl!] as [string, string, string],
+    }));
+  })();
+
   return (
     <>
       <MenuSearch categories={categories} />
+      <FeaturedCarousel items={featuredItems} />
 
       {dbUnavailable ? (
         <div className="container-page py-16">

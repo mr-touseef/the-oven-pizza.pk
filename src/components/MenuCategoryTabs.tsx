@@ -70,31 +70,6 @@ export default function MenuCategoryTabs({ categories, deals }: MenuCategoryTabs
   const visibleCategories = getVisibleCategories();
   return (
     <section className="scroll-mt-24 bg-white py-16 sm:py-24">
-      {/* Dark green header with tabs */}
-      <div className="bg-oven-teal-dark">
-        <div className="container-page">
-          <div className="py-6">
-            <h2 className="mb-4 font-display text-2xl text-oven-cream sm:text-3xl">
-              Browse our menu
-            </h2>
-            <div className="flex flex-wrap gap-2">
-              {(Object.keys(TAB_CONFIG) as TabType[]).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`rounded-lg px-4 py-2 font-display text-sm font-medium transition-all sm:text-base ${
-                    activeTab === tab
-                      ? "bg-oven-teal-darker text-oven-cream"
-                      : "bg-transparent text-oven-cream/70 hover:text-oven-cream"
-                  }`}
-                >
-                  {TAB_CONFIG[tab].label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
       {/* Menu categories grid */}
       <div className="container-page py-16">
         {activeTab === "deals" ? (
