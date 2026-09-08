@@ -1,6 +1,9 @@
 ﻿import type { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import type { MenuCategoryWithItems } from "@/lib/types";
+import Hero from "@/components/Hero";
+import BranchesPreview from "@/components/BranchesPreview";
+import { getBranches } from "@/lib/branches";
 import MenuSearch from "@/components/MenuSearch";
 import FeaturedCarousel from "@/components/FeaturedCarousel";
 
@@ -35,6 +38,7 @@ async function getMenuData(): Promise<{
 
 export default async function HomePage() {
   const { categories, dbUnavailable } = await getMenuData();
+  const branches = await getBranches();
 
   const featuredItems = (() => {
     const picked: typeof categories[number]["items"] = [];
@@ -59,8 +63,10 @@ export default async function HomePage() {
 
   return (
     <>
+      <Hero />
       <MenuSearch categories={categories} />
       <FeaturedCarousel items={featuredItems} />
+      <BranchesPreview branches={branches} />
 
       {dbUnavailable ? (
         <div className="container-page py-16">
@@ -78,3 +84,4 @@ export default async function HomePage() {
     </>
   );
 }
+

@@ -1,4 +1,4 @@
-export default function SectionHeading({
+﻿export default function SectionHeading({
   id,
   eyebrow,
   title,
@@ -14,12 +14,13 @@ export default function SectionHeading({
   return (
     <div className={align === "center" ? "mx-auto max-w-2xl text-center" : "max-w-2xl"}>
       <span className="section-eyebrow">{eyebrow}</span>
-      <h2 id={id} className="mt-4 text-3xl font-semibold text-oven-cream sm:text-4xl md:text-5xl">
+      <h1 id={id} className="mt-4 text-3xl font-semibold text-oven-cream sm:text-4xl md:text-5xl">
         {title}
-      </h2>
+      </h1>
       {tagline ? (
         <p className="mt-3 text-base text-oven-cream/70 sm:text-lg">{tagline}</p>
       ) : null}
     </div>
   );
 }
+
